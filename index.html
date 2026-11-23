@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Vườn Xanh</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Layout: sticky header, full-width bands with a centred 1180px wrapper; the garden map is drawn like a site plan with a central path */
+:root{
+  --bg:#f5f9f3; --surface:#ffffff; --soft:#e6f2e2; --soft2:#f0f7ed; --ink:#1c2a1e; --muted:#566857; --line:#d3e2cf;
+  --green:#2e7a39; --green-d:#22602b; --on-green:#ffffff; --earth:#8a5a34; --earth-soft:#f2e7da;
+  --path:#e8d9c2; --path-ink:#7b5a3a; --shadow:0 1px 2px rgba(30,60,30,.08),0 6px 18px rgba(30,60,30,.07);
+  --ok:#2e7a39; --warn:#a46f00; --bad:#b33a36; --info:#2c6bb0;
+  --st-used:#6cc070; --st-empty:#ffffff; --st-pend:#f5cd4f; --st-sale:#64a3e6; --st-maint:#e7716d; --plot-ink:#16231a;
+  --f-body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-head:'Lexend','Be Vietnam Pro',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111a13; --surface:#18231a; --soft:#1f2f21; --soft2:#1a281c; --ink:#e4eee2; --muted:#a2b5a2; --line:#2c3e2e;
+  --green:#71c27d; --green-d:#94d69e; --on-green:#0e1a10; --earth:#d1a37b; --earth-soft:#2b2219;
+  --path:#3a2f22; --path-ink:#d8bf9c; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.3);
+  --ok:#71c27d; --warn:#f0c24f; --bad:#f08a85; --info:#8cbcf0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111a13; --surface:#18231a; --soft:#1f2f21; --soft2:#1a281c; --ink:#e4eee2; --muted:#a2b5a2; --line:#2c3e2e;
+  --green:#71c27d; --green-d:#94d69e; --on-green:#0e1a10; --earth:#d1a37b; --earth-soft:#2b2219;
+  --path:#3a2f22; --path-ink:#d8bf9c; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.3);
+  --ok:#71c27d; --warn:#f0c24f; --bad:#f08a85; --info:#8cbcf0; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--surface)}
+h1,h2,h3,h4{font-family:var(--f-head);line-height:1.25;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.4rem,2.6vw,1.85rem)} h3{font-size:1.15rem}
+p{margin:0}
+a{color:var(--green)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--earth);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.page{padding-block:28px 56px;display:flex;flex-direction:column;gap:24px}
+.muted{color:var(--muted)} .small{font-size:.9rem} .num{font-variant-numeric:tabular-nums}
+.eyebrow{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;color:var(--earth)}
+.sec-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:12px}
+.sec-head>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+
+/* header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{display:flex;align-items:center;gap:14px;min-height:66px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);flex-shrink:0}
+.logo b{font-family:var(--f-head);font-size:1.25rem;letter-spacing:.02em;color:var(--green-d)}
+.logo small{display:block;font-size:.68rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;line-height:1}
+nav.main{display:flex;gap:2px;flex:1;flex-wrap:wrap}
+nav.main a{padding:8px 11px;border-radius:8px;text-decoration:none;color:var(--ink);font-weight:500;font-size:.95rem}
+nav.main a:hover{background:var(--soft)}
+nav.main a.on{background:var(--soft);color:var(--green-d);font-weight:700}
+.top-tools{display:flex;align-items:center;gap:6px;margin-left:auto}
+.icon-btn{position:relative;display:inline-grid;place-items:center;width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;text-decoration:none;color:var(--ink)}
+.icon-btn:hover{background:var(--soft)}
+.icon-btn svg{width:22px;height:22px}
+.badge{position:absolute;top:-5px;right:-5px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--bad);color:#fff;font-size:.72rem;font-weight:700;display:grid;place-items:center}
+.menu-btn{display:none}
+@media (max-width:1060px){
+  .menu-btn{display:inline-grid}
+  nav.main{display:none;position:absolute;left:0;right:0;top:100%;background:var(--surface);border-bottom:1px solid var(--line);flex-direction:column;padding:8px max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));box-shadow:var(--shadow)}
+  nav.main.open{display:flex}
+  nav.main a{padding:12px 14px;font-size:1.05rem}
+}
+.acct-name{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:520px){.acct-name{display:none}.logo small{display:none}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:9px 18px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{border-color:var(--green)}
+.btn.primary{background:var(--green);border-color:var(--green);color:var(--on-green)}
+.btn.primary:hover{background:var(--green-d);border-color:var(--green-d)}
+.btn.earth{background:var(--earth);border-color:var(--earth);color:var(--on-green)}
+.btn.info{background:var(--info);border-color:var(--info);color:var(--on-green)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.sm{min-height:36px;padding:5px 12px;font-size:.88rem;border-radius:8px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px}
+
+/* hero */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);background:#e6f3ee}
+.hero-art{position:absolute;inset:0;width:100%;height:100%}
+.hero-in{position:relative;padding-block:46px 150px}
+.hero-card{max-width:600px;background:rgba(248,252,244,.9);border-radius:16px;padding:26px 28px;display:flex;flex-direction:column;gap:14px;color:#17321d;box-shadow:0 10px 30px rgba(20,60,20,.14)}
+.hero-card .eyebrow{color:#7a4f2c}
+.hero-card h1{font-size:clamp(1.6rem,3.6vw,2.45rem);color:#17401f}
+.hero-card p{color:#33503a;font-size:1.05rem}
+.hero-card .btn{border-color:#b8d3b0;background:#fff;color:#17321d}
+.hero-card .btn.primary{background:#2e7a39;border-color:#2e7a39;color:#fff}
+.hero-stats{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.92rem;color:#33503a}
+.hero-stats b{font-family:var(--f-head);font-size:1.25rem;color:#17401f;display:block;line-height:1.1}
+@media (max-width:600px){.hero-in{padding-block:20px 120px}.hero-card{padding:20px}}
+
+/* bands */
+.band{padding-block:44px}
+.band.alt{background:var(--soft2);border-block:1px solid var(--line)}
+.band>.wrap{display:flex;flex-direction:column;gap:20px}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.card .art,.card .pimg{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;max-width:100%;background:var(--soft)}
+.card-b{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1;min-width:0}
+.card-b h3{font-size:1.08rem}
+.card-b .btn-row{margin-top:auto;padding-top:6px}
+.price{font-family:var(--f-head);font-weight:700;color:var(--green-d);font-size:1.15rem}
+.price small{font-family:var(--f-body);font-weight:500;color:var(--muted);font-size:.85rem}
+.meta{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.9rem;color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel h3{display:flex;align-items:center;gap:8px}
+.note-box{border-left:4px solid var(--earth);background:var(--earth-soft);padding:12px 16px;border-radius:0 10px 10px 0;font-size:.95rem}
+.note-box.blue{border-color:var(--info);background:var(--soft2)}
+.empty-state{padding:30px;text-align:center;color:var(--muted);border:1.5px dashed var(--line);border-radius:14px}
+
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:.82rem;font-weight:600;border:1px solid var(--line);white-space:nowrap;background:var(--soft2)}
+.dot{width:12px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.35);flex-shrink:0}
+.pill.ok{color:var(--ok);border-color:var(--ok)} .pill.warn{color:var(--warn);border-color:var(--warn)} .pill.bad{color:var(--bad);border-color:var(--bad)} .pill.info{color:var(--info);border-color:var(--info)}
+
+/* garden map */
+.legend{display:flex;flex-wrap:wrap;gap:8px}
+.legend button{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;font-size:.92rem}
+.legend button.on{border-color:var(--green);background:var(--soft)}
+.legend .dot{width:16px;height:16px}
+.map-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;align-items:center}
+.map{display:grid;grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);gap:12px;width:100%;max-width:900px;background:repeating-linear-gradient(45deg,var(--soft2) 0 10px,var(--soft) 10px 20px);padding:14px;border-radius:12px;border:2px solid var(--green)}
+.zone{display:flex;flex-direction:column;gap:8px;min-width:0}
+.zone-h{font-family:var(--f-head);font-weight:600;font-size:.85rem;letter-spacing:.06em;text-align:center;color:var(--green-d)}
+.blocks{display:flex;flex-direction:column;gap:18px}
+.plots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.plot{position:relative;aspect-ratio:5/3;border-radius:6px;border:1.5px solid rgba(20,40,20,.45);color:var(--plot-ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;font-family:var(--f-head);font-weight:700;font-size:clamp(.72rem,1.6vw,1rem);line-height:1.1;transition:transform .12s, box-shadow .12s;min-width:0}
+.plot small{font-family:var(--f-body);font-weight:500;font-size:.72rem;opacity:.8}
+.plot:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.st-used{background:var(--st-used)} .st-empty{background:var(--st-empty)} .st-pend{background:var(--st-pend);border-style:dashed}
+.st-sale{background:var(--st-sale)}
+.st-maint{background:repeating-linear-gradient(135deg,var(--st-maint) 0 7px,#f1a19e 7px 13px)}
+.plot.dim{opacity:.22}
+.plot.hl{outline:4px solid var(--earth);outline-offset:2px;z-index:2;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{outline-offset:6px}}
+@media (prefers-reduced-motion:reduce){.plot.hl{animation:none}.plot{transition:none}}
+.path{background:var(--path);border-radius:8px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--path-ink)}
+.path span{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--f-head);font-weight:600;letter-spacing:.3em;color:var(--path-ink);font-size:.82rem}
+.map-frame{width:100%;max-width:760px;display:flex;flex-direction:column}
+.map-frame.mini{max-width:520px}
+.gate{align-self:flex-end;font-size:.9rem;font-weight:700;color:var(--path-ink);background:var(--path);padding:4px 18px;border-radius:0 0 10px 10px;border:1px dashed var(--path-ink);border-top:0}
+@media (max-width:560px){.map{grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr);gap:6px;padding:8px}.plots{gap:4px}.blocks{gap:12px}.map-box{padding:10px}.path span{font-size:.62rem;letter-spacing:.12em}}
+.mini .plot small{display:none}
+
+/* forms */
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.form-grid .full{grid-column:1/-1}
+@media (max-width:620px){.form-grid{grid-template-columns:minmax(0,1fr)}}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field label{font-weight:600;font-size:.93rem}
+input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea{width:100%;min-height:46px;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface)}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--green);outline:none;box-shadow:0 0 0 3px var(--soft)}
+.check{display:flex;align-items:center;gap:8px;font-weight:500}
+.check input{width:20px;height:20px;accent-color:var(--green)}
+.radio-card{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer}
+.radio-card:has(input:checked){border-color:var(--green);background:var(--soft2)}
+.radio-card input{width:20px;height:20px;margin-top:3px;accent-color:var(--green)}
+.radio-card.off{opacity:.55;cursor:not-allowed}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.img-prev{width:120px;aspect-ratio:4/3;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+
+/* tabs & tables */
+.tabs{display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--line);padding-bottom:0}
+.tabs button{border:0;background:none;padding:10px 14px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.tabs button.on{color:var(--green-d);border-color:var(--green)}
+.tabs .badge{position:static;display:inline-grid;margin-left:4px}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--soft2);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td .btn-row{flex-wrap:nowrap;gap:6px}
+td input,td select{min-height:36px!important;padding:4px 8px!important;width:auto!important;max-width:130px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.stat span{font-size:.85rem;color:var(--muted)}
+.stat b{font-family:var(--f-head);font-size:1.5rem;font-variant-numeric:tabular-nums;color:var(--green-d)}
+.stat.earth b{color:var(--earth)}
+
+/* layout helpers */
+.two{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.side-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:22px;align-items:start}
+.side-nav{display:flex;flex-direction:column;gap:4px;position:sticky;top:calc(80px + env(safe-area-inset-top,0px))}
+.side-nav button{text-align:left;border:0;background:none;padding:10px 12px;border-radius:8px;font-weight:600;color:var(--muted);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.side-nav button.on{background:var(--soft);color:var(--green-d)}
+.side-nav .badge{position:static}
+@media (max-width:860px){.side-layout{grid-template-columns:minmax(0,1fr)}.side-nav{position:static;flex-direction:row;overflow-x:auto}.side-nav button{white-space:nowrap}}
+.list{display:flex;flex-direction:column;gap:10px}
+.row-item{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.row-item>div{min-width:0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:.95rem}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:600;min-width:0}
+
+/* timeline */
+.steps{display:flex;flex-wrap:wrap;gap:4px;font-size:.78rem}
+.steps span{padding:3px 8px;border-radius:6px;background:var(--soft2);color:var(--muted)}
+.steps span.done{background:var(--soft);color:var(--green-d);font-weight:700}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(10,25,12,.55);z-index:100;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:max(24px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 24px max(12px,env(safe-area-inset-left,0px))}
+.modal{background:var(--surface);border-radius:16px;width:100%;max-width:720px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;margin-block:auto}
+.modal-h{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.modal-b{padding:20px;display:flex;flex-direction:column;gap:16px}
+.modal-x{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:1.4rem;line-height:1}
+.plot-info{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.plot-info .art,.plot-info img{width:100%;border-radius:10px;aspect-ratio:8/5;object-fit:cover;max-width:100%}
+@media (max-width:620px){.plot-info{grid-template-columns:minmax(0,1fr)}}
+
+/* chat */
+.chat{display:grid;grid-template-columns:280px minmax(0,1fr);border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface);min-height:520px}
+.threads{border-right:1px solid var(--line);display:flex;flex-direction:column;overflow-y:auto;max-height:620px}
+.threads button{text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.threads button.on{background:var(--soft)}
+.threads button .small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.conv{display:flex;flex-direction:column;min-width:0}
+.conv-h{padding:12px 16px;border-bottom:1px solid var(--line);font-weight:700}
+.msgs{flex:1;padding:16px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;max-height:480px;background:var(--soft2)}
+.msg{max-width:78%;padding:9px 13px;border-radius:14px;background:var(--surface);border:1px solid var(--line);align-self:flex-start;overflow-wrap:anywhere}
+.msg.mine{align-self:flex-end;background:var(--green);border-color:var(--green);color:var(--on-green)}
+.msg time{display:block;font-size:.72rem;opacity:.75}
+.chat form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
+.quick{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px 0}
+.quick button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px;font-size:.82rem;cursor:pointer}
+@media (max-width:760px){.chat{grid-template-columns:minmax(0,1fr)}.threads{border-right:0;border-bottom:1px solid var(--line);max-height:200px}}
+
+/* cart */
+.qty{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
+.qty button{width:40px;height:40px;border:0;background:var(--soft2);cursor:pointer;font-size:1.2rem}
+.qty input{width:58px!important;min-height:40px!important;border:0!important;border-radius:0!important;text-align:center;padding:0!important}
+.stars{color:#d79a12;letter-spacing:1px}
+
+/* steps band */
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;counter-reset:s}
+.how div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:6px}
+.how div::before{counter-increment:s;content:"Bước " counter(s);font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--earth)}
+
+/* footer */
+footer{background:#1f4d26;color:#eaf5e6;padding-block:40px 30px}
+footer .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:26px}
+footer h4{font-size:1rem;margin-bottom:8px;color:#fff}
+footer a,footer button.link{color:#d6ecd0;text-decoration:none;background:none;border:0;padding:3px 0;cursor:pointer;text-align:left;font-size:.95rem}
+footer a:hover,footer button.link:hover{text-decoration:underline}
+footer ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+footer .copy{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.18);padding-top:16px;font-size:.85rem;color:#bcd8b5}
+
+/* toast */
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(560px,calc(100% - 32px))}
+.toast{background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;box-shadow:var(--shadow);font-weight:500;text-align:center}
+.demo-acc{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.demo-acc button{text-align:left;padding:12px 14px;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.demo-acc button:hover{border-color:var(--green)}
+</style>
+
+</head>
+<body>
+<div id="root">
+  <header class="top"><div class="wrap top-in" id="hdr"></div></header>
+  <main id="app"></main>
+  <footer id="ftr"></footer>
+</div>
+<div id="modal-root"></div>
+<div id="toast" aria-live="polite"></div>
+
+<script>
+/* ===================== DỮ LIỆU & LƯU TRỮ =====================
+   Bản mẫu chạy hoàn toàn trên trình duyệt: dữ liệu lưu ở localStorage của máy đang xem.
+   Khi triển khai thật, thay các hàm load()/save() bằng lời gọi API tới máy chủ + CSDL. */
+const LS_KEY='vuonxanh_demo_v2';
+let DB;
+const state={mapFilter:null,rent:{area:'',price:'',sort:'code'},land:{area:'',price:''},mk:{q:'',cat:'',plot:'',price:'',sort:'new'},
+  ordTab:'buy',sellerTab:'overview',adminTab:'dash',chatWith:null,chatDraft:'',loginTab:'login',after:null,adminOrderFilter:'',userRoleFilter:'',resetCode:null,resetUser:null,menuOpen:false};
+
+function dayOff(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
+function agoISO(days){const d=new Date();d.setDate(d.getDate()-days);return d.toISOString()}
+
+function seed(){
+  const users=[
+    {id:'u1',name:'Ban Quản Lý Vườn Xanh',phone:'0900000001',email:'admin@vuonxanh.vn',pass:'admin123',role:'admin',locked:false,addresses:[],joined:agoISO(400)},
+    {id:'u2',name:'Nguyễn Thị Lan',phone:'0901234567',email:'lan@example.com',pass:'123456',role:'owner',locked:false,addresses:['12 Hẻm 5, Phường An Lạc'],joined:agoISO(300)},
+    {id:'u3',name:'Trần Văn Hùng',phone:'0912345678',email:'hung@example.com',pass:'123456',role:'owner',locked:false,addresses:['88 Đường Số 3, Phường Tân Tạo'],joined:agoISO(280)},
+    {id:'u5',name:'Phạm Thị Tư',phone:'0933456789',email:'tu@example.com',pass:'123456',role:'owner',locked:false,addresses:['5 Hẻm 21, Phường Bình Hưng Hòa'],joined:agoISO(200)},
+    {id:'u4',name:'Lê Minh Anh',phone:'0987654321',email:'minhanh@example.com',pass:'123456',role:'buyer',locked:false,addresses:['45 Đường Số 7, Phường Bình Trị Đông'],joined:agoISO(90)},
+    {id:'u6',name:'Võ Thanh Bình',phone:'0977111222',email:'binh@example.com',pass:'123456',role:'buyer',locked:false,addresses:[],joined:agoISO(20)},
+  ];
+  const crops=['Rau muống','Cải ngọt','Mồng tơi','Rau ngót','Xà lách','Dưa leo','Cà chua','Hành lá','Rau dền','Đậu bắp'];
+  const pat={A:'UUUEUPUSUESEUMEU',B:'EUUUSEUPUUEUMESU'};
+  const M={U:'used',E:'empty',P:'pending',S:'sale',X:'maint',M:'maint'};
+  const growers=['u2','u3','u5'];const plots=[];let k=0;
+  for(const side of ['A','B'])for(let i=0;i<16;i++){k++;
+    const st=M[pat[side][i]];const area=20+((i*7+(side==='B'?3:0))%5)*5;const pm=area*10000;
+    plots.push({id:'pl'+side+(i+1),code:side+String(i+1).padStart(2,'0'),side,order:i,area,priceMonth:pm,priceYear:pm*10,salePrice:0,
+      status:st,userId:st==='used'?growers[k%3]:null,ownerId:null,crop:st==='used'?crops[k%crops.length]:'',img:null,note:'',prevStatus:null});
+  }
+  const P=c=>plots.find(p=>p.code===c);
+  const set=(c,u,crop,own)=>{const p=P(c);p.userId=u;p.crop=crop;if(own)p.ownerId=u};
+  set('A01','u2','Rau muống',true);set('A02','u2','Cải ngọt',true);set('A03','u2','Cải ngọt');set('A05','u5','Xà lách');set('A07','u5','Dưa leo',true);
+  set('A09','u2','Hành lá');set('B02','u3','Mồng tơi',true);set('B03','u3','Rau ngót');set('B07','u3','Cà chua');set('B09','u5','Rau dền');set('B10','u2','Đậu bắp');
+  P('A14').note='Đang cải tạo hệ thống tưới nhỏ giọt';P('B13').note='Tạm ngừng để bồi đất, dự kiến mở lại sau 1 tháng';
+  const listings=[];let seq=100;
+  [['A08','u3'],['A11','u5'],['B05','u2'],['B15','u3']].forEach(([c,u],i)=>{const p=P(c);p.ownerId=u;p.prevStatus='empty';p.salePrice=p.area*3000000;
+    listings.push({id:'TD'+(++seq),plotId:p.id,sellerId:u,price:p.salePrice,phone:users.find(x=>x.id===u).phone,
+      desc:['Ô đất gần cổng, thuận tiện tưới nước, đất đã cải tạo tơi xốp.','Ô đất nằm cuối khu B, yên tĩnh, nắng buổi sáng tốt.','Ô đất đã có giàn leo bằng tre, phù hợp trồng dưa leo, mướp.','Ô đất rộng, gần bể nước chung, đất phù sa đã bón hữu cơ.'][i],
+      img:null,status:'approved',date:agoISO(12-i*2)})});
+  listings.push({id:'TD'+(++seq),plotId:P('A02').id,sellerId:'u2',price:P('A02').area*3200000,phone:'0901234567',desc:'Muốn chuyển nhượng ô A02 do chuyển nơi ở. Đang trồng cải ngọt, có thể bàn giao cùng vụ rau.',img:null,status:'pending',date:agoISO(1)});
+  const rentals=[];
+  plots.filter(p=>p.status==='used'&&p.userId&&p.ownerId!==p.userId).forEach((p,i)=>{const start=agoISO(30+i*9);
+    rentals.push({id:'HD'+(++seq),plotId:p.id,userId:p.userId,name:users.find(u=>u.id===p.userId).name,phone:users.find(u=>u.id===p.userId).phone,term:12,total:p.priceYear,status:'approved',paid:true,date:start,start,note:''})});
+  P('A06').pendingBy='u4';P('B08').pendingBy='u6';
+  rentals.unshift({id:'HD'+(++seq),plotId:P('A06').id,userId:'u4',name:'Lê Minh Anh',phone:'0987654321',term:6,total:Math.round(P('A06').priceMonth*6*.95/1000)*1000,status:'pending',paid:false,date:agoISO(1),note:'Muốn trồng rau cho gia đình 4 người.'});
+  rentals.unshift({id:'HD'+(++seq),plotId:P('B08').id,userId:'u6',name:'Võ Thanh Bình',phone:'0977111222',term:1,total:P('B08').priceMonth,status:'pending',paid:false,date:agoISO(0),note:''});
+  const deals=[{id:'GD'+(++seq),listingId:listings[2].id,plotId:P('B05').id,buyerId:'u4',sellerId:'u2',offer:listings[2].price-5000000,msg:'Tôi muốn mua ô B05, có thể giảm 5 triệu không ạ?',status:'requested',date:agoISO(2)}];
+  const pr=(id,plot,seller,name,cat,price,qty,unit,harv,desc,deliv)=>({id,plotId:P(plot).id,sellerId:seller,name,cat,price,qty,unit,harvest:dayOff(harv),delivery:deliv||['Giao tận nơi','Nhận tại vườn'],desc,img:null,hidden:false,adminHidden:false,created:agoISO(10+harv)});
+  const products=[
+    pr('sp1','A01','u2','Rau muống','Rau ăn lá',15000,50,'kg',-1,'Rau muống ta trồng không thuốc trừ sâu, tưới nước giếng khoan đã lọc. Cắt buổi sáng, giao trong ngày.'),
+    pr('sp2','A02','u2','Cải ngọt','Rau ăn lá',18000,30,'kg',-2,'Cải ngọt non, lá xanh mướt, bón phân hữu cơ ủ từ bã đậu.'),
+    pr('sp3','B02','u3','Mồng tơi','Rau ăn lá',16000,25,'kg',0,'Mồng tơi lá to, nấu canh cua rất ngọt. Hái theo đơn đặt.'),
+    pr('sp4','B03','u3','Rau ngót','Rau ăn lá',20000,20,'kg',3,'Rau ngót non, tuốt sẵn lá nếu khách yêu cầu.'),
+    pr('sp5','A05','u5','Xà lách','Rau ăn lá',35000,15,'kg',-3,'Xà lách búp mỡ, giòn, trồng trong nhà lưới che mưa.'),
+    pr('sp6','A07','u5','Dưa leo','Rau ăn quả',22000,40,'kg',2,'Dưa leo giống ta, trái vừa tay, giòn và ít hạt.'),
+    pr('sp7','B07','u3','Cà chua','Rau ăn quả',30000,35,'kg',-1,'Cà chua chín cây, vị chua ngọt tự nhiên.'),
+    pr('sp8','A09','u2','Hành lá','Rau gia vị',40000,8,'kg',-4,'Hành lá thơm, bán theo kg hoặc bó nhỏ.'),
+    pr('sp9','B09','u5','Rau dền','Rau ăn lá',14000,22,'kg',5,'Rau dền đỏ, nhặt sạch, đóng túi 500g.'),
+    pr('sp10','B10','u2','Đậu bắp','Rau ăn quả',25000,18,'kg',1,'Đậu bắp non, hái trái nhỏ dưới 10 cm.',['Nhận tại vườn']),
+  ];
+  const mkO=(id,buyer,seller,items,status,days,pay)=>{const sub=items.reduce((s,i)=>s+i.price*i.qty,0);const ship=sub>=200000?0:15000;const hist=[];
+    for(const s of OFLOW){hist.push({s,t:agoISO(days)});if(s===status)break}
+    return {id,buyerId:buyer,sellerId:seller,items,subtotal:sub,ship,total:sub+ship,pay:pay||'cod',name:'Lê Minh Anh',phone:'0987654321',address:'45 Đường Số 7, Phường Bình Trị Đông',note:'',status,history:hist,stockDeducted:status!=='pending',paid:status==='completed',date:agoISO(days)}};
+  const it=(pid,qty)=>{const p=products.find(x=>x.id===pid);return {pid,name:p.name,price:p.price,qty,unit:p.unit}};
+  const orders=[mkO('DH1001','u4','u2',[it('sp1',3),it('sp2',2)],'completed',8),mkO('DH1002','u4','u3',[it('sp7',2),it('sp3',1)],'shipping',1,'bank'),mkO('DH1003','u4','u5',[it('sp5',1)],'pending',0),
+    mkO('DH1004','u6','u2',[it('sp1',5),it('sp8',1)],'completed',5)];
+  orders[3].name='Võ Thanh Bình';orders[3].phone='0977111222';orders[3].address='Nhận tại vườn';
+  const reviews=[{id:'dg1',pid:'sp1',userId:'u4',orderId:'DH1001',rating:5,text:'Rau muống giòn, sạch, giao nhanh. Sẽ mua tiếp.',date:agoISO(6),hidden:false},
+    {id:'dg2',pid:'sp1',userId:'u6',orderId:'DH1004',rating:4,text:'Rau tươi, bó hơi to so với nhà tôi.',date:agoISO(4),hidden:false},
+    {id:'dg3',pid:'sp2',userId:'u4',orderId:'DH1001',rating:5,text:'Cải ngọt non, nấu canh rất ngon.',date:agoISO(6),hidden:false}];
+  const msgs=[{id:'m1',from:'u4',to:'u2',text:'Chào cô Lan, rau muống sáng mai còn không ạ? Con muốn lấy 2kg.',time:agoISO(1),read:true},
+    {id:'m2',from:'u2',to:'u4',text:'Còn con nhé, cô cắt lúc 6 giờ, 7 giờ giao tới nhà con được.',time:agoISO(1),read:false},
+    {id:'m3',from:'u4',to:'u2',text:'Về ô đất B05, cô có bớt được chút nào không ạ?',time:agoISO(0),read:false}];
+  const notifs=[{id:'n1',to:'admin',text:'Yêu cầu thuê mới: ô A06 từ Lê Minh Anh (0987654321).',link:'admin',time:agoISO(1),read:false},
+    {id:'n2',to:'admin',text:'Yêu cầu thuê mới: ô B08 từ Võ Thanh Bình (0977111222).',link:'admin',time:agoISO(0),read:false},
+    {id:'n3',to:'admin',text:'Tin đăng bán ô A02 của Nguyễn Thị Lan đang chờ kiểm duyệt.',link:'admin',time:agoISO(1),read:false},
+    {id:'n4',to:'u2',text:'Lê Minh Anh gửi yêu cầu mua ô B05.',link:'land',time:agoISO(2),read:false},
+    {id:'n5',to:'u5',text:'Đơn hàng mới DH1003 đang chờ bạn xác nhận.',link:'seller',time:agoISO(0),read:false}];
+  return {v:2,seq:2000,session:null,users,plots,listings,rentals,deals,products,orders,reviews,msgs,notifs,feedback:[],carts:{},
+    settings:{bank:'Ngân hàng mẫu · STK 0000 1111 2222 · Chủ tài khoản: BAN QUAN LY VUON XANH (thông tin mẫu, cập nhật khi triển khai)',shipFee:15000,freeShip:200000}};
+}
+const OFLOW=['pending','confirmed','preparing','shipping','delivered','completed'];
+function load(){try{const s=localStorage.getItem(LS_KEY);if(s){DB=JSON.parse(s);if(DB&&DB.v===2)return}}catch(e){}DB=seed()}
+function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(DB))}catch(e){toast('Trình duyệt không cho lưu dữ liệu (bộ nhớ đầy hoặc bị chặn). Thay đổi sẽ mất khi tải lại trang.')}}
+
+/* ===================== TIỆN ÍCH ===================== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>Math.round(n||0).toLocaleString('vi-VN')+' đ';
+const short=n=>n>=1e9?(n/1e9).toLocaleString('vi-VN',{maximumFractionDigits:2})+' tỷ':n>=1e6?(n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:1})+' triệu':money(n);
+const fmtD=iso=>iso?new Date(iso).toLocaleDateString('vi-VN'):'';
+const fmtT=iso=>new Date(iso).toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
+const me=()=>DB.users.find(u=>u.id===DB.session&&!u.locked)||null;
+const role=()=>me()?.role||'guest';
+const user=id=>DB.users.find(u=>u.id===id);
+const uname=id=>user(id)?.name||'Ban quản lý Vườn Xanh';
+const plot=id=>DB.plots.find(p=>p.id===id);
+const prod=id=>DB.products.find(p=>p.id===id);
+const nid=p=>p+(++DB.seq);
+const now=()=>new Date().toISOString();
+const phoneOK=s=>/^0\d{9}$/.test(String(s).replace(/[\s.]/g,''));
+function notify(to,text,link){DB.notifs.unshift({id:nid('n'),to,text,link:link||'',time:now(),read:false})}
+function posText(p){const list=sidePlots(p.side);const i=list.indexOf(p);return `Khu ${p.side} (${p.side==='A'?'bên trái':'bên phải'} lối đi) · Cụm ${Math.floor(i/4)+1} · Hàng ${Math.floor(i/2)+1} · Cột ${i%2+1}`}
+function sidePlots(s){return DB.plots.filter(p=>p.side===s).sort((a,b)=>a.order-b.order)}
+const PST={used:{t:'Đang sử dụng',c:'st-used',v:'--st-used'},empty:{t:'Đất trống, có thể thuê',c:'st-empty',v:'--st-empty'},pending:{t:'Đang có người đặt thuê',c:'st-pend',v:'--st-pend'},sale:{t:'Đang rao bán',c:'st-sale',v:'--st-sale'},maint:{t:'Bảo trì / tạm ngừng',c:'st-maint',v:'--st-maint'}};
+const OST={pending:'Chờ xác nhận',confirmed:'Đã xác nhận',preparing:'Đang chuẩn bị hàng',shipping:'Đang giao hàng',delivered:'Đã giao hàng',completed:'Đã hoàn thành',cancelled:'Đã hủy'};
+const OCLS={pending:'warn',confirmed:'info',preparing:'info',shipping:'info',delivered:'ok',completed:'ok',cancelled:'bad'};
+const RST={pending:['Chờ xác nhận','warn'],approved:['Đang thuê','ok'],rejected:['Bị từ chối','bad'],ended:['Đã kết thúc','']};
+const LST={pending:['Chờ kiểm duyệt','warn'],approved:['Đang rao bán','info'],rejected:['Bị từ chối','bad'],withdrawn:['Đã gỡ','' ],sold:['Đã chuyển nhượng','ok']};
+const DST={requested:['Chờ người bán phản hồi','warn'],agreed:['Chờ Ban quản lý xác nhận chuyển nhượng','info'],completed:['Đã chuyển nhượng','ok'],declined:['Người bán từ chối','bad'],cancelled:['Đã hủy','bad']};
+const ROLE={admin:'Quản trị viên',owner:'Chủ vườn',buyer:'Người mua',guest:'Khách'};
+const TERMS={1:'1 tháng',6:'6 tháng (giảm 5%)',12:'1 năm (tặng 2 tháng)'};
+const CATS=['Rau ăn lá','Rau ăn quả','Rau gia vị','Củ'];
+const UNITS=['kg','bó','trái','hộp','túi 500g'];
+const PAYMENT_METHODS={cod:{label:'Thanh toán khi nhận hàng (COD)',hint:'Trả tiền mặt cho người giao hoặc khi nhận tại vườn.',enabled:true},
+  bank:{label:'Chuyển khoản ngân hàng',hint:'Chuyển khoản theo thông tin bên dưới, ghi mã đơn ở nội dung.',enabled:true},
+  online:{label:'Cổng thanh toán trực tuyến',hint:'Ví điện tử, thẻ ATM/Visa. Sắp ra mắt.',enabled:false}};
+/* Điểm tích hợp cổng thanh toán: khi có hợp đồng với VNPay / MoMo / ZaloPay..., hiện thực createPayment()
+   gọi API máy chủ để tạo phiên thanh toán và trả về URL chuyển hướng; verify() xử lý kết quả IPN. */
+const PaymentGateway={provider:null,async createPayment(order){throw new Error('Chưa tích hợp cổng thanh toán')},async verify(payload){return false}};
+function rentTotal(p,term){term=+term;if(term===12)return p.priceYear;if(term===6)return Math.round(p.priceMonth*6*.95/1000)*1000;return p.priceMonth*term}
+function pill(t,c){return `<span class="pill ${c||''}">${esc(t)}</span>`}
+function stPill(st){const s=PST[st];return `<span class="pill"><span class="dot ${s.c}"></span>${s.t}</span>`}
+function visibleProducts(){return DB.products.filter(p=>!p.hidden&&!p.adminHidden&&!user(p.sellerId)?.locked)}
+function prodRating(pid){const r=DB.reviews.filter(x=>x.pid===pid&&!x.hidden);return r.length?{avg:r.reduce((s,x)=>s+x.rating,0)/r.length,n:r.length}:{avg:0,n:0}}
+function prodSold(pid){return DB.orders.filter(o=>['delivered','completed'].includes(o.status)).reduce((s,o)=>s+o.items.filter(i=>i.pid===pid).reduce((a,i)=>a+i.qty,0),0)}
+function stars(n){const f=Math.round(n);return `<span class="stars" aria-label="${n.toFixed(1)} sao">${'★'.repeat(f)}${'☆'.repeat(5-f)}</span>`}
+function activeListings(){return DB.listings.filter(l=>l.status==='approved')}
+function cartKey(){return me()?me().id:'guest'}
+function cart(){return DB.carts[cartKey()]||(DB.carts[cartKey()]=[])}
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;$('#toast').appendChild(t);setTimeout(()=>t.remove(),4200)}
+function requireLogin(msg){if(me())return true;toast(msg||'Vui lòng đăng nhập hoặc đăng ký tài khoản để thực hiện giao dịch.');state.after=location.hash||'#home';closeModal();go('login');return false}
+
+/* ===================== HÌNH MINH HỌA (SVG) ===================== */
+function rnd(seed){let h=1779033703;for(const c of String(seed))h=Math.imul(h^c.charCodeAt(0),3432918353),h=h<<13|h>>>19;return()=>{h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);return((h^=h>>>16)>>>0)/4294967296}}
+const CROP={'Rau muống':{k:'leaf',c:'#3f9b45',c2:'#86c977'},'Cải ngọt':{k:'leaf',c:'#2f8a3a',c2:'#b3df92'},'Mồng tơi':{k:'leaf',c:'#2a6e35',c2:'#4e9447'},'Rau ngót':{k:'leaf',c:'#3b8f3f',c2:'#6dbb5e'},
+  'Xà lách':{k:'head',c:'#7fc152',c2:'#c7ea8d'},'Dưa leo':{k:'cuke',c:'#3d7f34',c2:'#a2d27c'},'Cà chua':{k:'tomato',c:'#d8452f',c2:'#4c9a3d'},'Hành lá':{k:'onion',c:'#5bb04f',c2:'#f4f6e4'},
+  'Rau dền':{k:'leaf',c:'#a13a5a',c2:'#d16b8a'},'Đậu bắp':{k:'okra',c:'#5d9a3c',c2:'#b9dc8f'},'Ớt':{k:'tomato',c:'#c92a1f',c2:'#3c8a34'},'Cà rốt':{k:'okra',c:'#e57a1f',c2:'#5aa043'},_:{k:'leaf',c:'#4a9a48',c2:'#9fd18a'}};
+function cropOf(name){const n=String(name||'');for(const k in CROP)if(k!=='_'&&n.toLowerCase().includes(k.toLowerCase()))return CROP[k];return CROP._}
+function prodArt(name,cls){const c=cropOf(name),r=rnd(name);let g='';
+  if(c.k==='leaf'){for(let i=0;i<11;i++){const x=40+(i%4)*40+r()*12,y=38+Math.floor(i/4)*34+r()*10,rot=-50+r()*100;g+=`<path d="M${x} ${y+22} Q${x} ${y+8} ${x+2} ${y}" stroke="#2f6e2e" stroke-width="2" fill="none"/><ellipse cx="${x}" cy="${y}" rx="24" ry="11" transform="rotate(${rot} ${x} ${y})" fill="${i%3?c.c:c.c2}"/>`}}
+  else if(c.k==='head'){[[70,78],[132,82],[100,64]].forEach(([x,y],i)=>{g+=`<circle cx="${x}" cy="${y}" r="40" fill="${c.c}"/><circle cx="${x}" cy="${y}" r="27" fill="${c.c2}"/><circle cx="${x}" cy="${y}" r="12" fill="#e4f5b5"/>`})}
+  else if(c.k==='tomato'){[[62,86],[104,74],[142,90],[86,112],[126,114]].forEach(([x,y])=>{g+=`<circle cx="${x}" cy="${y}" r="24" fill="${c.c}"/><circle cx="${x-8}" cy="${y-8}" r="6" fill="#fff" opacity=".35"/><path d="M${x-10} ${y-20} L${x} ${y-14} L${x+10} ${y-20} L${x+4} ${y-24} L${x} ${y-30} L${x-4} ${y-24}Z" fill="${c.c2}"/>`})}
+  else if(c.k==='cuke'){for(let i=0;i<4;i++){const x=40+i*34,y=50+r()*20;g+=`<rect x="${x}" y="${y}" width="26" height="78" rx="13" transform="rotate(${-20+i*12} ${x+13} ${y+39})" fill="${i%2?c.c:'#4f9443'}"/><rect x="${x+8}" y="${y+10}" width="5" height="56" rx="2" transform="rotate(${-20+i*12} ${x+13} ${y+39})" fill="${c.c2}" opacity=".7"/>`}}
+  else if(c.k==='onion'){for(let i=0;i<9;i++){const x=52+i*12;g+=`<rect x="${x}" y="${22+r()*14}" width="7" height="92" rx="3" fill="${c.c}"/><rect x="${x-1}" y="102" width="9" height="24" rx="4" fill="${c.c2}"/>`}g+=`<rect x="48" y="96" width="114" height="10" rx="3" fill="#b07a46"/>`}
+  else if(c.k==='okra'){for(let i=0;i<6;i++){const x=46+i*22,rot=-15+r()*30;g+=`<path d="M${x} 40 L${x+9} 40 L${x+5} 122 Z" transform="rotate(${rot} ${x+5} 80)" fill="${i%2?c.c:c.c2}"/><rect x="${x+1}" y="32" width="8" height="10" rx="2" transform="rotate(${rot} ${x+5} 80)" fill="#5aa043"/>`}}
+  return `<svg viewBox="0 0 200 150" class="${cls||'art'}" role="img" aria-label="Hình minh họa ${esc(name)}"><rect width="200" height="150" fill="#eef6e8"/><rect y="118" width="200" height="32" fill="#e3d2b8"/><ellipse cx="100" cy="128" rx="78" ry="9" fill="#cdb894"/>${g}</svg>`}
+function plotArt(p,cls){const c=cropOf(p.crop);let g='';
+  for(let i=0;i<5;i++)g+=`<rect x="12" y="${22+i*24}" width="216" height="12" rx="6" fill="#6b4426"/>`;
+  if(p.status==='used'&&p.crop&&p.crop!=='Chưa trồng'){for(let i=0;i<5;i++)for(let j=0;j<12;j++){const x=22+j*18,y=27+i*24;g+=`<ellipse cx="${x}" cy="${y-4}" rx="7" ry="9" fill="${(i+j)%2?c.c:c.c2}"/>`}}
+  if(p.status==='used'&&(!p.crop||p.crop==='Chưa trồng')){for(let j=0;j<12;j++)g+=`<circle cx="${22+j*18}" cy="50" r="3" fill="#8cc472"/>`}
+  if(p.status==='pending')[40,120,200].forEach(x=>g+=`<rect x="${x}" y="30" width="4" height="60" fill="#d9c29a"/><path d="M${x+4} 30 l26 9 l-26 9z" fill="#f3c63f"/>`);
+  if(p.status==='sale')g+=`<rect x="70" y="40" width="100" height="44" rx="6" fill="#fff" stroke="#3d82cf" stroke-width="3"/><text x="120" y="68" text-anchor="middle" font-family="Lexend,sans-serif" font-weight="700" font-size="16" fill="#2c6bb0">RAO BÁN</text><rect x="117" y="84" width="6" height="40" fill="#d9c29a"/>`;
+  if(p.status==='maint')g+=`<g transform="rotate(-12 120 75)"><rect x="-10" y="62" width="260" height="22" fill="#e2534f"/>${Array.from({length:14},(_,i)=>`<rect x="${-10+i*20}" y="62" width="10" height="22" fill="#fff"/>`).join('')}</g>`;
+  if(p.status==='empty')g+=`<rect x="160" y="96" width="60" height="30" rx="4" fill="#fff"/><text x="190" y="116" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#2e7a39">TRỐNG</text>`;
+  const img=p.img?`<img src="${p.img}" alt="Ảnh thực tế ô ${esc(p.code)}" class="${cls||'art'}">`:'';
+  return img||`<svg viewBox="0 0 240 150" class="${cls||'art'}" role="img" aria-label="Hình minh họa ô đất ${esc(p.code)}"><rect width="240" height="150" fill="#8a5a34"/>${g}<rect x="6" y="6" width="68" height="24" rx="4" fill="#fff" opacity=".92"/><text x="40" y="23" text-anchor="middle" font-family="Lexend,sans-serif" font-weight="700" font-size="14" fill="#1d3a22">${esc(p.code)}</text></svg>`}
+function prodImg(p,cls){return p.img?`<img src="${p.img}" alt="${esc(p.name)}" class="${cls||'pimg'}">`:prodArt(p.name,cls)}
+function heroArt(){const W=1200,H=460,hz=250;let s=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" class="hero-art" aria-hidden="true"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7eef4"/><stop offset="1" stop-color="#eef7e2"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#sky)"/><circle cx="1040" cy="86" r="44" fill="#ffe59a"/>`;
+  s+=`<path d="M0 ${hz} C180 ${hz-70} 360 ${hz-40} 520 ${hz-20} S860 ${hz-90} 1200 ${hz-30} V${hz+10} H0Z" fill="#b6d99c"/><path d="M0 ${hz} C240 ${hz-30} 560 ${hz-10} 760 ${hz-26} S1060 ${hz-10} 1200 ${hz-4} V${hz+10} H0Z" fill="#94c57e"/>`;
+  s+=`<rect y="${hz}" width="${W}" height="${H-hz}" fill="#a87a4f"/>`;const vx=760;
+  for(let i=-9;i<=9;i++){const bx=vx+i*150,tx=vx+i*14;s+=`<polygon points="${bx-55},${H} ${bx+55},${H} ${tx+5},${hz} ${tx-5},${hz}" fill="#5f8f3e"/>`;
+    for(let t=0;t<=14;t++){const f=Math.pow(t/14,1.7);const y=hz+(H-hz)*f,x=tx+(bx-tx)*f,r=2+16*f;s+=`<circle cx="${x-r*.9}" cy="${y-r*.4}" r="${r}" fill="${t%2?'#7cc35f':'#4f9b45'}"/><circle cx="${x+r*.9}" cy="${y-r*.4}" r="${r*.85}" fill="${t%2?'#5aa94c':'#86cf69'}"/>`}}
+  s+=`<polygon points="${vx-40},${H} ${vx+40},${H} ${vx+3},${hz} ${vx-3},${hz}" fill="#e1caa3"/>`;
+  return s+'</svg>'}
+const ICON={cart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.6 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L21.5 8H6"/></svg>',
+  chat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>',
+  bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>',
+  menu:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>',
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+  leaf:'<svg viewBox="0 0 40 40" width="38" height="38" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#2e7a39"/><path d="M11 29c0-10 6-17 19-18-1 12-8 18-18 18" fill="#9fd88a"/><path d="M11 29c4-6 8-10 14-13" stroke="#2e7a39" stroke-width="2" fill="none" stroke-linecap="round"/></svg>'};
+
+/* ===================== KHUNG TRANG ===================== */
+function curRoute(){const h=(location.hash||'#home').slice(1);return h||'home'}
+function renderHeader(){const u=me(),r=role(),cur=curRoute().split('-')[0];
+  const links=[['home','Trang chủ'],['map','Sơ đồ khu vườn'],['rent','Thuê đất'],['land','Mua bán đất'],['market','Chợ rau'],['orders','Đơn hàng']];
+  if(r==='owner')links.push(['seller','Kênh chủ vườn']);if(r==='admin')links.push(['admin','Quản trị']);
+  const cc=cart().reduce((s,i)=>s+1,0);
+  const unreadMsg=u?DB.msgs.filter(m=>m.to===u.id&&!m.read).length:0;
+  const unreadN=u?myNotifs().filter(n=>!n.read).length:0;
+  $('#hdr').innerHTML=`<a class="logo" href="#home">${ICON.leaf}<span><b>VƯỜN XANH</b><small>Hệ sinh thái vườn rau</small></span></a>
+  <nav class="main ${state.menuOpen?'open':''}" aria-label="Điều hướng chính">${links.map(([h,t])=>`<a href="#${h}" class="${cur===h||(cur==='sp'&&h==='market')?'on':''}">${t}</a>`).join('')}</nav>
+  <div class="top-tools">
+    <a class="icon-btn" href="#cart" title="Giỏ hàng" aria-label="Giỏ hàng">${ICON.cart}${cc?`<span class="badge">${cc}</span>`:''}</a>
+    ${u?`<a class="icon-btn" href="#messages" title="Tin nhắn" aria-label="Tin nhắn">${ICON.chat}${unreadMsg?`<span class="badge">${unreadMsg}</span>`:''}</a>
+    <button class="icon-btn" data-a="notifs" title="Thông báo" aria-label="Thông báo">${ICON.bell}${unreadN?`<span class="badge">${unreadN}</span>`:''}</button>
+    <a class="btn sm" href="#account" title="Tài khoản">${ICON.user.replace('<svg','<svg width="18" height="18"')}<span class="acct-name">${esc(u.name.split(' ').slice(-1)[0])}</span></a>`
+    :`<a class="btn sm primary" href="#login">Đăng nhập / Đăng ký</a>`}
+    <button class="icon-btn menu-btn" data-a="menu" aria-label="Mở menu">${ICON.menu}</button>
+  </div>`}
+function renderFooter(){$('#ftr').innerHTML=`<div class="wrap">
+  <div><h4>VƯỜN XANH</h4><p style="color:#d6ecd0;font-size:.95rem">Kết nối người có đất, người trồng rau và người mua nông sản sạch trong cùng một khu vườn.</p></div>
+  <div><h4>Liên hệ</h4><ul><li>Hotline: <span class="num">0900 000 001</span></li><li>Email: lienhe@vuonxanh.vn</li><li>Giờ mở cửa vườn: 5:30 – 18:30 hằng ngày</li></ul></div>
+  <div><h4>Địa chỉ khu vườn</h4><ul><li>Khu vườn Vườn Xanh, lô đất số 1</li><li>(Địa chỉ mẫu, cập nhật địa chỉ thực tế khi triển khai)</li><li><a href="#map">Xem sơ đồ khu vườn</a></li></ul></div>
+  <div><h4>Chính sách & hỗ trợ</h4><ul><li><button class="link" data-a="policy" data-k="rent">Chính sách thuê đất</button></li><li><button class="link" data-a="policy" data-k="sale">Chính sách mua bán</button></li><li><button class="link" data-a="policy" data-k="ship">Giao hàng & đổi trả</button></li><li><button class="link" data-a="support">Hỗ trợ khách hàng</button></li></ul></div>
+  <div class="copy">© ${new Date().getFullYear()} Vườn Xanh. Bản chạy thử: dữ liệu mẫu lưu trên trình duyệt của bạn. <button class="link" data-a="resetDemo" style="color:#d6ecd0;text-decoration:underline">Khôi phục dữ liệu mẫu</button></div>
+</div>`}
+const routes={home:pageHome,map:pageMap,rent:pageRent,land:pageLand,market:pageMarket,sp:pageProduct,cart:pageCart,checkout:pageCheckout,orders:pageOrders,messages:pageMessages,account:pageAccount,login:pageLogin,seller:pageSeller,admin:pageAdmin};
+function render(){const r=curRoute();const [name,...rest]=r.split('-');const fn=routes[name]||pageHome;
+  renderHeader();$('#app').innerHTML=fn(rest.join('-'))}
+function go(h){state.menuOpen=false;if(curRoute()===h){render();window.scrollTo(0,0)}else location.hash=h}
+function modal(title,body,wide){$('#modal-root').innerHTML=`<div class="overlay" data-a="closeModalBg"><div class="modal" role="dialog" aria-modal="true" aria-label="${esc(title)}" style="${wide?'max-width:900px':''}"><div class="modal-h"><h3>${title}</h3><button class="modal-x" data-a="closeModal" aria-label="Đóng">×</button></div><div class="modal-b">${body}</div></div></div>`;document.body.style.overflow='hidden';setTimeout(()=>$('#modal-root .modal-x')?.focus(),30)}
+function closeModal(){$('#modal-root').innerHTML='';document.body.style.overflow=''}
+function confirmBox(text,action,data,label){modal('Xác nhận',`<p>${text}</p><div class="btn-row"><button class="btn danger" data-a="${action}" ${Object.entries(data||{}).map(([k,v])=>`data-${k}="${esc(v)}"`).join(' ')}>${label||'Đồng ý'}</button><button class="btn" data-a="closeModal">Hủy</button></div>`)}
+
+/* ===================== SƠ ĐỒ KHU VƯỜN ===================== */
+function renderMap(o={}){const cell=p=>{const dim=o.filter&&p.status!==o.filter;const hl=o.highlight===p.id;
+    return `<button class="plot ${PST[p.status].c} ${dim?'dim':''} ${hl?'hl':''}" data-a="${o.admin?'editPlot':'plot'}" data-id="${p.id}" title="${esc(p.code)}: ${PST[p.status].t}, ${p.area} m²" aria-label="Ô ${esc(p.code)}, ${PST[p.status].t}">${esc(p.code)}<small>${p.area} m²</small></button>`};
+  const zone=s=>{const l=sidePlots(s),bl=[];for(let i=0;i<l.length;i+=4)bl.push(l.slice(i,i+4));
+    return `<div class="zone"><div class="zone-h">KHU ${s} · ${s==='A'?'BÊN TRÁI':'BÊN PHẢI'}</div><div class="blocks">${bl.map(b=>`<div class="plots">${b.map(cell).join('')}</div>`).join('')}</div></div>`};
+  return `<div class="map-box"><div class="map-frame ${o.mini?'mini':''}"><div class="map">${zone('A')}<div class="path"><span>LỐI ĐI CHÍNH</span></div>${zone('B')}</div><div class="gate">▲ Lối vào</div></div></div>`}
+function legend(interactive){const cnt=s=>DB.plots.filter(p=>p.status===s).length;
+  return `<div class="legend">${Object.entries(PST).map(([k,s])=>interactive?`<button data-a="mapFilter" data-s="${k}" class="${state.mapFilter===k?'on':''}" aria-pressed="${state.mapFilter===k}"><span class="dot ${s.c}"></span>${s.t} <b class="num">${cnt(k)}</b></button>`:`<span class="pill"><span class="dot ${s.c}"></span>${s.t} · ${cnt(k)}</span>`).join('')}${interactive&&state.mapFilter?`<button data-a="mapFilter" data-s="">Hiện tất cả</button>`:''}</div>`}
+function plotModal(id){const p=plot(id);if(!p)return;const lst=DB.listings.find(l=>l.plotId===p.id&&l.status==='approved');const r=role();
+  const occupant=p.status==='used'?uname(p.userId):p.status==='pending'?`Đang chờ xác nhận${p.pendingBy?` (${esc(uname(p.pendingBy))})`:''}`:'Chưa có';
+  const btns=[];
+  if(p.status==='empty')btns.push(`<button class="btn primary" data-a="rent" data-id="${p.id}">Đăng ký thuê</button>`);
+  else btns.push(`<button class="btn" disabled title="Chỉ ô đất trống mới đăng ký thuê được">Đăng ký thuê</button>`);
+  if(lst)btns.push(`<button class="btn info" data-a="landDetail" data-id="${lst.id}">Liên hệ mua đất</button>`);
+  if(r==='admin')btns.push(`<button class="btn earth" data-a="editPlot" data-id="${p.id}">Sửa ô đất</button>`);
+  modal(`Ô đất ${esc(p.code)}`,`<div class="plot-info"><div>${plotArt(p)}</div><dl class="kv">
+    <dt>Mã ô đất</dt><dd>${esc(p.code)}</dd><dt>Diện tích</dt><dd class="num">${p.area} m²</dd><dt>Vị trí</dt><dd>${posText(p)}</dd>
+    <dt>Giá thuê</dt><dd class="num">${money(p.priceMonth)}/tháng<br><span class="muted small">${money(p.priceYear)}/năm</span></dd>
+    <dt>Giá bán</dt><dd class="num">${lst?money(lst.price):'<span class="muted">Không rao bán</span>'}</dd>
+    <dt>Người sử dụng</dt><dd>${occupant}</dd><dt>Quyền sở hữu</dt><dd>${esc(uname(p.ownerId))}</dd>
+    <dt>Đang trồng</dt><dd>${esc(p.crop||'Chưa trồng')}</dd><dt>Trạng thái</dt><dd>${stPill(p.status)}</dd>
+  </dl></div>${p.note?`<div class="note-box">${esc(p.note)}</div>`:''}
+  ${p.status==='sale'?`<div class="note-box blue">Ô đất này đang được <b>rao bán (chuyển nhượng quyền sử dụng)</b>, không phải đất cho thuê.</div>`:''}
+  <div class="btn-row">${btns.join('')}<button class="btn" data-a="closeModal">Đóng</button></div>`)}
+
+/* ===================== TRANG CHỦ ===================== */
+function prodCard(p){const pl=plot(p.plotId),rt=prodRating(p.id);
+  return `<article class="card"><a href="#sp-${p.id}" aria-label="Xem ${esc(p.name)}">${prodImg(p)}</a><div class="card-b">
+  <div class="meta"><span>Vườn ${esc(pl?.code||'?')}</span><span>${esc(p.cat)}</span></div>
+  <h3><a href="#sp-${p.id}" style="color:inherit;text-decoration:none">${esc(p.name)}</a></h3>
+  <div class="price num">${money(p.price)} <small>/ ${esc(p.unit)}</small></div>
+  <div class="meta"><span>${p.qty>0?`Còn ${p.qty} ${esc(p.unit)}`:'<b style="color:var(--bad)">Hết hàng</b>'}</span><span>Thu hoạch ${fmtD(p.harvest)}</span>${rt.n?`<span>${stars(rt.avg)} (${rt.n})</span>`:''}</div>
+  <div class="btn-row"><button class="btn primary sm" data-a="addCart" data-id="${p.id}" ${p.qty>0?'':'disabled'}>Thêm vào giỏ</button><a class="btn sm" href="#sp-${p.id}">Chi tiết</a></div></div></article>`}
+function rentCard(p){return `<article class="card">${plotArt(p)}<div class="card-b"><div class="meta"><span>${posText(p)}</span></div>
+  <h3>Ô đất ${esc(p.code)} · <span class="num">${p.area} m²</span></h3><div class="price num">${money(p.priceMonth)} <small>/ tháng</small></div>
+  <div class="meta"><span>${money(p.priceYear)}/năm</span>${stPill(p.status)}</div>
+  <div class="btn-row"><button class="btn primary sm" data-a="rent" data-id="${p.id}">Đăng ký thuê</button><button class="btn sm" data-a="locate" data-id="${p.id}">Xem trên sơ đồ</button></div></div></article>`}
+function landCard(l){const p=plot(l.plotId);return `<article class="card">${l.img?`<img src="${l.img}" class="art" alt="Ảnh ô ${esc(p.code)}">`:plotArt(p)}<div class="card-b"><div class="meta"><span>${posText(p)}</span></div>
+  <h3>Bán ô đất ${esc(p.code)} · <span class="num">${p.area} m²</span></h3><div class="price num" style="color:var(--info)">${short(l.price)} <small>(${money(Math.round(l.price/p.area))}/m²)</small></div>
+  <p class="small muted">${esc(l.desc).slice(0,110)}${l.desc.length>110?'…':''}</p><div class="meta"><span>Người bán: ${esc(uname(l.sellerId))}</span></div>
+  <div class="btn-row"><button class="btn info sm" data-a="landDetail" data-id="${l.id}">Xem chi tiết</button><button class="btn sm" data-a="locate" data-id="${p.id}">Xem trên sơ đồ</button></div></div></article>`}
+function pageHome(){const empt=DB.plots.filter(p=>p.status==='empty').slice(0,4),sales=activeListings().slice(0,4),vp=visibleProducts();
+  const featured=[...vp].sort((a,b)=>(prodRating(b.id).avg*10+prodSold(b.id))-(prodRating(a.id).avg*10+prodSold(a.id))).slice(0,4);
+  const today=new Date().toISOString().slice(0,10);const fresh=vp.filter(p=>p.harvest<=today&&p.qty>0).sort((a,b)=>b.harvest.localeCompare(a.harvest)).slice(0,4);
+  const growers=new Set(DB.plots.filter(p=>p.userId).map(p=>p.userId)).size;
+  return `<section class="hero">${heroArt()}<div class="wrap hero-in"><div class="hero-card"><span class="eyebrow">Hệ sinh thái vườn rau</span>
+    <h1>VƯỜN XANH – KẾT NỐI ĐẤT TRỒNG, LAN TỎA NÔNG SẢN SẠCH</h1>
+    <p>Thuê một ô đất để tự tay trồng rau, mua bán ô đất trong vườn, hoặc đặt rau sạch do chính các chủ vườn thu hoạch mỗi sáng.</p>
+    <div class="btn-row"><a class="btn primary" href="#map">Khám phá khu vườn</a><a class="btn" href="#rent">Thuê đất ngay</a></div>
+    <div class="hero-stats"><span><b class="num">${DB.plots.length}</b>ô đất</span><span><b class="num">${DB.plots.filter(p=>p.status==='empty').length}</b>ô đang trống</span><span><b class="num">${growers}</b>người trồng</span><span><b class="num">${vp.length}</b>loại rau đang bán</span></div></div></div></section>
+  <section class="band"><div class="wrap"><div class="sec-head"><div><span class="eyebrow">Sơ đồ mặt bằng</span><h2>Sơ đồ khu vườn</h2><p class="muted">Nhấp vào từng ô đất để xem diện tích, giá thuê, người đang trồng và loại rau.</p></div><a class="btn" href="#map">Mở sơ đồ đầy đủ</a></div>
+    ${legend(false)}${renderMap()}</div></section>
+  <section class="band alt"><div class="wrap"><div class="sec-head"><div><span class="eyebrow">Đất cho thuê</span><h2>Ô đất đang trống</h2></div><a class="btn" href="#rent">Xem tất cả đất cho thuê</a></div>
+    ${empt.length?`<div class="cards">${empt.map(rentCard).join('')}</div>`:'<div class="empty-state">Hiện chưa có ô đất trống.</div>'}
+    <div class="sec-head" style="margin-top:14px"><div><span class="eyebrow" style="color:var(--info)">Đất chuyển nhượng</span><h2>Ô đất đang rao bán</h2></div><a class="btn" href="#land">Xem tất cả đất bán</a></div>
+    ${sales.length?`<div class="cards">${sales.map(landCard).join('')}</div>`:'<div class="empty-state">Hiện chưa có ô đất rao bán.</div>'}</div></section>
+  <section class="band"><div class="wrap"><div class="sec-head"><div><span class="eyebrow">Chợ rau Vườn Xanh</span><h2>Rau sạch nổi bật</h2></div><a class="btn" href="#market">Vào chợ rau</a></div><div class="cards">${featured.map(prodCard).join('')}</div>
+    <div class="sec-head" style="margin-top:14px"><div><span class="eyebrow">Hái trong tuần</span><h2>Mới thu hoạch</h2></div></div>${fresh.length?`<div class="cards">${fresh.map(prodCard).join('')}</div>`:'<div class="empty-state">Chưa có rau mới thu hoạch.</div>'}</div></section>
+  <section class="band alt"><div class="wrap"><div class="sec-head"><div><span class="eyebrow">Mô hình Vườn Xanh</span><h2>Từ ô đất đến bữa cơm nhà bạn</h2><p class="muted" style="max-width:65ch">Vườn Xanh chia khu đất chung thành từng ô nhỏ có mã riêng. Người dân thuê ô đất để tự trồng, Ban quản lý lo nước tưới, lối đi và an ninh. Rau thu hoạch dư có thể đăng bán ngay trên chợ của vườn.</p></div></div>
+    <div class="how"><div><h3>Chọn ô đất</h3><p class="muted">Xem sơ đồ, chọn ô trống phù hợp diện tích và ngân sách, gửi yêu cầu thuê theo tháng, 6 tháng hoặc 1 năm.</p></div>
+    <div><h3>Ban quản lý xác nhận</h3><p class="muted">Ban quản lý gọi điện xác nhận, ký hợp đồng thuê và bàn giao ô đất đã làm đất sẵn.</p></div>
+    <div><h3>Trồng và chăm sóc</h3><p class="muted">Vườn có nước tưới, nhà kho dụng cụ chung và hướng dẫn trồng rau hữu cơ cho người mới.</p></div>
+    <div><h3>Bán rau trên chợ</h3><p class="muted">Đăng bán rau thu hoạch, nhận đơn, nhắn tin với người mua và theo dõi doanh thu ngay trên website.</p></div></div></div></section>`}
+
+/* ===================== SƠ ĐỒ ===================== */
+function pageMap(){return `<section class="wrap page"><div class="sec-head"><div><span class="eyebrow">Sơ đồ mặt bằng</span><h2>Sơ đồ khu vườn</h2><p class="muted">Khu A bên trái, khu B bên phải, lối đi chính ở giữa. Bấm vào chú thích màu để lọc, bấm vào ô đất để xem chi tiết.</p></div></div>
+  ${legend(true)}${renderMap({filter:state.mapFilter})}
+  <div class="stats">${['A','B'].map(s=>{const l=sidePlots(s);return `<div class="stat"><span>Khu ${s}: ${l.length} ô, tổng diện tích</span><b class="num">${l.reduce((a,p)=>a+p.area,0)} m²</b></div>`}).join('')}<div class="stat"><span>Ô trống có thể thuê</span><b class="num">${DB.plots.filter(p=>p.status==='empty').length}</b></div><div class="stat"><span>Ô đang rao bán</span><b class="num">${DB.plots.filter(p=>p.status==='sale').length}</b></div></div></section>`}
+
+/* ===================== THUÊ ĐẤT ===================== */
+function rentList(){const f=state.rent;let l=DB.plots.filter(p=>p.status==='empty');
+  if(f.area==='s')l=l.filter(p=>p.area<25);if(f.area==='m')l=l.filter(p=>p.area>=25&&p.area<=35);if(f.area==='l')l=l.filter(p=>p.area>35);
+  if(f.price)l=l.filter(p=>p.priceMonth<=+f.price);
+  l.sort(f.sort==='price'?(a,b)=>a.priceMonth-b.priceMonth:f.sort==='area'?(a,b)=>b.area-a.area:(a,b)=>a.code.localeCompare(b.code));
+  return l.length?`<p class="muted">${l.length} ô đất phù hợp</p><div class="cards">${l.map(rentCard).join('')}</div>`:'<div class="empty-state">Không có ô đất trống phù hợp bộ lọc. Hãy nới rộng điều kiện lọc.</div>'}
+function pageRent(){const u=me();const mine=u?DB.rentals.filter(r=>r.userId===u.id):[];
+  return `<section class="wrap page"><div class="sec-head"><div><span class="eyebrow">Đất cho thuê</span><h2>THUÊ ĐẤT TRỒNG RAU</h2><p class="muted">Chọn ô đất trống, chọn thời hạn thuê và gửi yêu cầu. Ban quản lý sẽ gọi điện xác nhận trong vòng 24 giờ.</p></div></div>
+  <div class="note-box"><b>Đất cho thuê</b> là quyền sử dụng ô đất để trồng rau trong thời hạn thuê. Người thuê không được bán hay chuyển nhượng ô đất thuê. Muốn mua hẳn ô đất, xem trang <a href="#land">Mua bán đất vườn</a>.</div>
+  <div class="filters"><div class="field"><label for="rf-area">Diện tích</label><select id="rf-area" data-c="rentF" data-k="area"><option value="">Tất cả</option><option value="s" ${state.rent.area==='s'?'selected':''}>Dưới 25 m²</option><option value="m" ${state.rent.area==='m'?'selected':''}>25 – 35 m²</option><option value="l" ${state.rent.area==='l'?'selected':''}>Trên 35 m²</option></select></div>
+   <div class="field"><label for="rf-price">Giá thuê tối đa / tháng</label><select id="rf-price" data-c="rentF" data-k="price"><option value="">Không giới hạn</option>${[250000,300000,350000].map(v=>`<option value="${v}" ${+state.rent.price===v?'selected':''}>${money(v)}</option>`).join('')}</select></div>
+   <div class="field"><label for="rf-sort">Sắp xếp</label><select id="rf-sort" data-c="rentF" data-k="sort"><option value="code">Theo mã ô</option><option value="price" ${state.rent.sort==='price'?'selected':''}>Giá thấp đến cao</option><option value="area" ${state.rent.sort==='area'?'selected':''}>Diện tích lớn nhất</option></select></div></div>
+  <div id="rent-list">${rentList()}</div>
+  <div class="panel"><h3>Bảng giá thuê</h3><p class="muted small">Giá thuê tính theo diện tích, khoảng 10.000 đ/m²/tháng. Đã gồm nước tưới, lối đi chung và bảo vệ.</p><div class="table-wrap"><table><thead><tr><th>Thời hạn</th><th>Cách tính</th><th>Ví dụ ô 25 m²</th></tr></thead><tbody>
+   <tr><td>1 tháng</td><td>Giá tháng</td><td class="num">${money(250000)}</td></tr><tr><td>6 tháng</td><td>6 × giá tháng, giảm 5%</td><td class="num">${money(1425000)}</td></tr><tr><td>1 năm</td><td>10 × giá tháng (tặng 2 tháng)</td><td class="num">${money(2500000)}</td></tr></tbody></table></div></div>
+  ${u?`<div class="panel"><h3>Đăng ký thuê của tôi</h3>${mine.length?`<div class="list">${mine.map(rentalRow).join('')}</div>`:'<p class="muted">Bạn chưa gửi yêu cầu thuê nào.</p>'}</div>`:`<div class="note-box blue">Bạn đang xem với tư cách khách. <a href="#login">Đăng nhập hoặc đăng ký</a> để gửi yêu cầu thuê và theo dõi tình trạng đăng ký.</div>`}</section>`}
+function rentalRow(r){const p=plot(r.plotId),[t,c]=RST[r.status];return `<div class="row-item"><div><b>Ô ${esc(p?.code||'(đã xóa)')}</b> · ${TERMS[r.term]} · <span class="num">${money(r.total)}</span><div class="small muted">Gửi ngày ${fmtD(r.date)} · Mã ${r.id}${r.start?` · Bắt đầu ${fmtD(r.start)}`:''}</div></div>${pill(t,c)}</div>`}
+function rentForm(p){const u=me();return `<form data-f="rent" class="form-grid"><input type="hidden" name="plot" value="${p.id}">
+  <div class="full note-box blue">Ô <b>${esc(p.code)}</b> · ${p.area} m² · ${posText(p)}</div>
+  <div class="field full"><label for="r-term">Thời hạn thuê</label><select id="r-term" name="term" data-c="rentTerm" data-id="${p.id}">${Object.entries(TERMS).map(([k,v])=>`<option value="${k}" ${k==='12'?'selected':''}>${v}: ${money(rentTotal(p,k))}</option>`).join('')}</select></div>
+  <div class="field"><label for="r-name">Họ và tên</label><input id="r-name" name="name" required value="${esc(u.name)}"></div>
+  <div class="field"><label for="r-phone">Số điện thoại</label><input id="r-phone" name="phone" required inputmode="tel" value="${esc(u.phone)}"></div>
+  <div class="field full"><label for="r-note">Ghi chú (không bắt buộc)</label><textarea id="r-note" name="note" placeholder="Ví dụ: dự định trồng rau ăn lá, muốn nhận đất từ đầu tháng"></textarea></div>
+  <div class="full" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><div>Tổng tiền thuê: <b class="price num" id="r-total">${money(rentTotal(p,12))}</b></div><div class="btn-row"><button class="btn primary">Gửi yêu cầu thuê</button><button type="button" class="btn" data-a="closeModal">Hủy</button></div></div></form>`}
+
+/* ===================== MUA BÁN ĐẤT ===================== */
+function landList(){const f=state.land;let l=activeListings();
+  if(f.area==='s')l=l.filter(x=>plot(x.plotId).area<25);if(f.area==='m')l=l.filter(x=>{const a=plot(x.plotId).area;return a>=25&&a<=35});if(f.area==='l')l=l.filter(x=>plot(x.plotId).area>35);
+  if(f.price)l=l.filter(x=>x.price<=+f.price);
+  return l.length?`<div class="cards">${l.map(landCard).join('')}</div>`:'<div class="empty-state">Không có ô đất rao bán phù hợp bộ lọc.</div>'}
+function pageLand(){const u=me();const owned=u?DB.plots.filter(p=>p.ownerId===u.id):[];
+  const myL=u?DB.listings.filter(l=>l.sellerId===u.id):[];const myD=u?DB.deals.filter(d=>d.buyerId===u.id||d.sellerId===u.id):[];
+  return `<section class="wrap page"><div class="sec-head"><div><span class="eyebrow" style="color:var(--info)">Đất chuyển nhượng</span><h2>MUA BÁN ĐẤT VƯỜN</h2><p class="muted">Mua lại quyền sử dụng ô đất trong khu vườn. Mọi tin đăng đều được Ban quản lý kiểm tra quyền sở hữu trước khi hiển thị.</p></div></div>
+  <div class="note-box blue"><b>Đất bán</b> là chuyển nhượng hẳn quyền sử dụng ô đất cho người mua, khác với <a href="#rent">đất cho thuê</a>. Chỉ chủ sở hữu hợp lệ (hoặc người được ủy quyền) mới được đăng bán. Giao dịch chỉ hoàn tất khi Ban quản lý xác nhận chuyển nhượng.</div>
+  <div class="filters"><div class="field"><label for="lf-area">Diện tích</label><select id="lf-area" data-c="landF" data-k="area"><option value="">Tất cả</option><option value="s">Dưới 25 m²</option><option value="m">25 – 35 m²</option><option value="l">Trên 35 m²</option></select></div>
+   <div class="field"><label for="lf-price">Giá bán tối đa</label><select id="lf-price" data-c="landF" data-k="price"><option value="">Không giới hạn</option><option value="80000000">80 triệu</option><option value="100000000">100 triệu</option><option value="120000000">120 triệu</option></select></div></div>
+  <div id="land-list">${landList()}</div>
+  ${u?`<div class="two"><div class="panel"><h3>Giao dịch của tôi</h3>${myD.length?`<div class="list">${myD.map(dealRow).join('')}</div>`:'<p class="muted">Chưa có giao dịch mua bán đất.</p>'}
+    ${myL.length?`<h3 style="margin-top:8px">Tin đăng bán của tôi</h3><div class="list">${myL.map(l=>{const [t,c]=LST[l.status];return `<div class="row-item"><div><b>Ô ${esc(plot(l.plotId)?.code)}</b> · <span class="num">${money(l.price)}</span><div class="small muted">Đăng ngày ${fmtD(l.date)}${l.reason?` · Lý do: ${esc(l.reason)}`:''}</div></div><div class="btn-row">${pill(t,c)}${['pending','approved'].includes(l.status)?`<button class="btn sm danger" data-a="withdrawListing" data-id="${l.id}">Gỡ tin</button>`:''}</div></div>`}).join('')}</div>`:''}</div>
+   <div class="panel"><h3>Đăng bán ô đất</h3>${owned.length?landPostForm(owned):`<p class="muted">Tài khoản của bạn chưa có ô đất nào thuộc quyền sở hữu, nên chưa thể đăng bán. Ô đất đang thuê không được đăng bán.</p><p class="small muted">Nếu bạn là chủ sở hữu hoặc được ủy quyền, hãy liên hệ Ban quản lý (0900 000 001) để cập nhật giấy tờ.</p>`}</div></div>`
+  :`<div class="note-box">Đăng nhập để gửi yêu cầu mua, nhắn tin với người bán hoặc đăng bán ô đất bạn sở hữu. <a href="#login">Đăng nhập / Đăng ký</a></div>`}</section>`}
+function landPostForm(owned){return `<form data-f="listLand" class="form-grid"><div class="field full"><label for="lp-plot">Ô đất thuộc quyền sở hữu của bạn</label><select id="lp-plot" name="plot" required>${owned.map(p=>`<option value="${p.id}">${esc(p.code)} · ${p.area} m² · ${PST[p.status].t}</option>`).join('')}</select></div>
+  <div class="field"><label for="lp-price">Giá bán (đồng)</label><input id="lp-price" name="price" type="number" min="1000000" step="500000" required placeholder="Ví dụ 90000000"></div>
+  <div class="field"><label for="lp-phone">Số điện thoại liên hệ</label><input id="lp-phone" name="phone" required value="${esc(me().phone)}"></div>
+  <div class="field full"><label for="lp-desc">Mô tả</label><textarea id="lp-desc" name="desc" required placeholder="Tình trạng đất, lý do bán, giấy tờ kèm theo..."></textarea></div>
+  <div class="field full"><label for="lp-img">Hình ảnh ô đất</label><input id="lp-img" type="file" accept="image/*" data-into="img"><input type="hidden" name="img"><img class="img-prev" hidden alt="Ảnh xem trước"></div>
+  <label class="check full"><input type="checkbox" name="confirm" required> Tôi xác nhận là chủ sở hữu hoặc người được ủy quyền chuyển nhượng hợp lệ ô đất này.</label>
+  <div class="full"><button class="btn info">Gửi tin đăng để kiểm duyệt</button></div></form>`}
+function dealRow(d){const p=plot(d.plotId),[t,c]=DST[d.status],u=me(),isSeller=d.sellerId===u.id;
+  return `<div class="row-item"><div><b>Ô ${esc(p?.code)}</b> · ${isSeller?'Người mua: '+esc(uname(d.buyerId)):'Người bán: '+esc(uname(d.sellerId))}<div class="small muted">Giá đề nghị <span class="num">${money(d.offer)}</span> · ${fmtD(d.date)} · ${d.id}</div>${d.msg?`<div class="small">"${esc(d.msg)}"</div>`:''}</div>
+  <div class="btn-row">${pill(t,c)}${isSeller&&d.status==='requested'?`<button class="btn sm primary" data-a="dealAgree" data-id="${d.id}">Đồng ý bán</button><button class="btn sm danger" data-a="dealDecline" data-id="${d.id}">Từ chối</button>`:''}${!isSeller&&d.status==='requested'?`<button class="btn sm danger" data-a="dealCancel" data-id="${d.id}">Hủy yêu cầu</button>`:''}<button class="btn sm" data-a="chat" data-to="${isSeller?d.buyerId:d.sellerId}">Nhắn tin</button></div></div>`}
+function landDetail(id){const l=DB.listings.find(x=>x.id===id);if(!l)return;const p=plot(l.plotId),s=user(l.sellerId),u=me();
+  modal(`Bán ô đất ${esc(p.code)}`,`<div class="plot-info"><div>${l.img?`<img src="${l.img}" alt="Ảnh ô đất">`:plotArt(p)}</div><dl class="kv">
+   <dt>Mã ô đất</dt><dd>${esc(p.code)}</dd><dt>Diện tích</dt><dd class="num">${p.area} m²</dd><dt>Vị trí</dt><dd>${posText(p)}</dd>
+   <dt>Giá bán</dt><dd class="num" style="color:var(--info)">${money(l.price)}</dd><dt>Người bán</dt><dd>${esc(s?.name)}</dd><dt>Điện thoại</dt><dd class="num">${esc(l.phone)}</dd><dt>Đăng ngày</dt><dd>${fmtD(l.date)}</dd></dl></div>
+   <p>${esc(l.desc)}</p><div class="note-box blue">Tin đăng đã được Ban quản lý kiểm tra quyền sở hữu. Khi hai bên thống nhất, Ban quản lý sẽ xác nhận và cập nhật chủ sở hữu mới.</div>
+   ${u&&u.id===l.sellerId?'<p class="muted">Đây là tin đăng của bạn.</p>':`<form data-f="buyReq" class="form-grid"><input type="hidden" name="lid" value="${l.id}"><div class="field"><label for="br-offer">Giá đề nghị (đồng)</label><input id="br-offer" name="offer" type="number" value="${l.price}" min="1000000" step="500000" required></div>
+   <div class="field"><label for="br-msg">Lời nhắn cho người bán</label><input id="br-msg" name="msg" placeholder="Ví dụ: tôi muốn xem đất sáng thứ Bảy"></div>
+   <div class="full btn-row"><button class="btn info">Gửi yêu cầu mua</button><button type="button" class="btn" data-a="chat" data-to="${l.sellerId}" data-ctx="Chào anh/chị, tôi quan tâm ô đất ${esc(p.code)} đang rao bán.">Nhắn tin với người bán</button><button type="button" class="btn" data-a="locate" data-id="${p.id}">Xem trên sơ đồ</button></div></form>`}`)}
+
+/* ===================== CHỢ RAU ===================== */
+function marketList(){const f=state.mk;let l=visibleProducts();const q=f.q.trim().toLowerCase();
+  if(q)l=l.filter(p=>(p.name+' '+p.desc+' '+(plot(p.plotId)?.code||'')).toLowerCase().includes(q));
+  if(f.cat)l=l.filter(p=>p.cat===f.cat);if(f.plot)l=l.filter(p=>p.plotId===f.plot);if(f.price)l=l.filter(p=>p.price<=+f.price);
+  l.sort(f.sort==='price'?(a,b)=>a.price-b.price:f.sort==='priced'?(a,b)=>b.price-a.price:f.sort==='rate'?(a,b)=>prodRating(b.id).avg-prodRating(a.id).avg:(a,b)=>b.harvest.localeCompare(a.harvest));
+  return l.length?`<p class="muted">${l.length} sản phẩm</p><div class="cards">${l.map(prodCard).join('')}</div>`:'<div class="empty-state">Không tìm thấy sản phẩm phù hợp. Thử từ khóa khác như "rau muống" hoặc "A01".</div>'}
+function pageMarket(){const plots=[...new Set(visibleProducts().map(p=>p.plotId))].map(plot).filter(Boolean).sort((a,b)=>a.code.localeCompare(b.code));const f=state.mk;
+  return `<section class="wrap page"><div class="sec-head"><div><span class="eyebrow">Thương mại điện tử</span><h2>CHỢ RAU VƯỜN XANH</h2><p class="muted">Rau củ do chính các chủ vườn trồng và thu hoạch. Mỗi sản phẩm ghi rõ ô đất trồng.</p></div>${role()==='owner'?'<a class="btn primary" href="#seller">Đăng bán rau</a>':''}</div>
+  <div class="filters"><div class="field" style="grid-column:span 2;min-width:0"><label for="mk-q">Tìm sản phẩm</label><input id="mk-q" type="search" data-i="mkQ" value="${esc(f.q)}" placeholder="Tên rau, mô tả hoặc mã vườn"></div>
+   <div class="field"><label for="mk-cat">Loại rau</label><select id="mk-cat" data-c="mkF" data-k="cat"><option value="">Tất cả</option>${CATS.map(c=>`<option ${f.cat===c?'selected':''}>${c}</option>`).join('')}</select></div>
+   <div class="field"><label for="mk-plot">Khu vườn</label><select id="mk-plot" data-c="mkF" data-k="plot"><option value="">Tất cả</option>${plots.map(p=>`<option value="${p.id}" ${f.plot===p.id?'selected':''}>Vườn ${esc(p.code)}</option>`).join('')}</select></div>
+   <div class="field"><label for="mk-price">Giá tối đa</label><select id="mk-price" data-c="mkF" data-k="price"><option value="">Không giới hạn</option>${[15000,20000,30000].map(v=>`<option value="${v}" ${+f.price===v?'selected':''}>${money(v)}</option>`).join('')}</select></div>
+   <div class="field"><label for="mk-sort">Sắp xếp</label><select id="mk-sort" data-c="mkF" data-k="sort"><option value="new">Mới thu hoạch</option><option value="price" ${f.sort==='price'?'selected':''}>Giá thấp đến cao</option><option value="priced" ${f.sort==='priced'?'selected':''}>Giá cao đến thấp</option><option value="rate" ${f.sort==='rate'?'selected':''}>Đánh giá cao</option></select></div></div>
+  <div id="mk-list">${marketList()}</div></section>`}
+function pageProduct(id){const p=prod(id);if(!p||((p.hidden||p.adminHidden)&&p.sellerId!==me()?.id&&role()!=='admin'))return `<section class="wrap page"><div class="empty-state">Sản phẩm không tồn tại hoặc đã ngừng bán. <a href="#market">Quay lại chợ rau</a></div></section>`;
+  const pl=plot(p.plotId),rt=prodRating(p.id),u=me();const revs=DB.reviews.filter(r=>r.pid===p.id&&!r.hidden);
+  const canReview=u&&DB.orders.some(o=>o.buyerId===u.id&&o.status==='completed'&&o.items.some(i=>i.pid===p.id))&&!revs.some(r=>r.userId===u.id);
+  return `<section class="wrap page"><a href="#market" class="small">← Chợ rau</a><div class="two"><div class="panel" style="padding:0;overflow:hidden">${prodImg(p,'art')}</div>
+  <div class="panel"><span class="eyebrow">${esc(p.cat)} · Vườn ${esc(pl?.code)}</span><h2>${esc(p.name)}</h2><div class="price num" style="font-size:1.6rem">${money(p.price)} <small>/ ${esc(p.unit)}</small></div>
+   ${rt.n?`<div>${stars(rt.avg)} <span class="muted">${rt.avg.toFixed(1)} · ${rt.n} đánh giá · đã bán ${prodSold(p.id)} ${esc(p.unit)}</span></div>`:'<div class="muted small">Chưa có đánh giá</div>'}
+   <dl class="kv"><dt>Khu vực trồng</dt><dd>Vườn ${esc(pl?.code)} (${pl?posText(pl):''})</dd><dt>Người trồng</dt><dd>${esc(uname(p.sellerId))}</dd><dt>Còn lại</dt><dd class="num">${p.qty} ${esc(p.unit)}</dd><dt>Thu hoạch</dt><dd>${fmtD(p.harvest)}</dd><dt>Giao hàng</dt><dd>${p.delivery.map(esc).join(', ')}</dd></dl>
+   <p>${esc(p.desc)}</p>
+   ${p.qty>0?`<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><div class="qty"><button type="button" data-a="qtyStep" data-d="-1" aria-label="Giảm">−</button><input id="pd-qty" type="number" min="1" max="${p.qty}" value="1" aria-label="Số lượng"><button type="button" data-a="qtyStep" data-d="1" aria-label="Tăng">+</button></div>
+   <button class="btn primary" data-a="addCart" data-id="${p.id}" data-q="#pd-qty">Thêm vào giỏ hàng</button><button class="btn earth" data-a="buyNow" data-id="${p.id}">Mua ngay</button></div>`:'<div class="note-box">Sản phẩm tạm hết hàng. Nhắn tin cho người trồng để hỏi đợt thu hoạch tới.</div>'}
+   <div class="btn-row"><button class="btn" data-a="chat" data-to="${p.sellerId}" data-ctx="Chào ${esc(uname(p.sellerId))}, tôi hỏi về sản phẩm ${esc(p.name)} (vườn ${esc(pl?.code)}): ">Nhắn tin với người bán</button>${pl?`<button class="btn" data-a="plot" data-id="${pl.id}">Xem ô đất trồng</button>`:''}</div></div></div>
+  <div class="panel"><h3>Đánh giá sản phẩm</h3>${revs.length?`<div class="list">${revs.map(r=>`<div class="row-item"><div><b>${esc(uname(r.userId))}</b> ${stars(r.rating)}<div>${esc(r.text)}</div><div class="small muted">${fmtD(r.date)}</div></div></div>`).join('')}</div>`:'<p class="muted">Chưa có đánh giá nào.</p>'}
+   ${canReview?`<form data-f="review" class="form-grid"><input type="hidden" name="pid" value="${p.id}"><div class="field"><label for="rv-r">Số sao</label><select id="rv-r" name="rating">${[5,4,3,2,1].map(n=>`<option value="${n}">${n} sao</option>`).join('')}</select></div><div class="field"><label for="rv-t">Nhận xét</label><input id="rv-t" name="text" required placeholder="Rau có tươi không, giao có đúng hẹn không?"></div><div class="full"><button class="btn primary">Gửi đánh giá</button></div></form>`:'<p class="small muted">Bạn có thể đánh giá sau khi đơn hàng chứa sản phẩm này hoàn thành.</p>'}</div></section>`}
+
+/* ===================== GIỎ HÀNG & ĐẶT HÀNG ===================== */
+function groupCart(){const g={};for(const it of cart()){const p=prod(it.pid);if(!p)continue;(g[p.sellerId]=g[p.sellerId]||[]).push({...it,p})}return g}
+function shipFee(sub){return sub>=DB.settings.freeShip?0:DB.settings.shipFee}
+function cartTotals(){const g=groupCart();let sub=0,ship=0;for(const s in g){const t=g[s].reduce((a,i)=>a+i.p.price*i.qty,0);sub+=t;ship+=shipFee(t)}return {sub,ship,total:sub+ship,g}}
+function pageCart(){const {sub,ship,total,g}=cartTotals();
+  if(!cart().length)return `<section class="wrap page"><h2>Giỏ hàng</h2><div class="empty-state">Giỏ hàng đang trống. <a href="#market">Vào chợ rau</a> để chọn rau sạch.</div></section>`;
+  return `<section class="wrap page"><h2>Giỏ hàng</h2><div class="two"><div class="list">${Object.entries(g).map(([sid,items])=>{const t=items.reduce((a,i)=>a+i.p.price*i.qty,0);return `<div class="panel"><h3>Người bán: ${esc(uname(sid))}</h3>
+   ${items.map(i=>`<div class="row-item" style="border:0;padding:0"><div style="display:flex;gap:12px;align-items:center"><div style="width:84px;flex-shrink:0;border-radius:8px;overflow:hidden">${prodImg(i.p)}</div><div><b>${esc(i.p.name)}</b><div class="small muted">Vườn ${esc(plot(i.p.plotId)?.code)} · ${money(i.p.price)}/${esc(i.p.unit)} · còn ${i.p.qty}</div></div></div>
+   <div class="btn-row" style="align-items:center"><div class="qty"><button data-a="cartQty" data-id="${i.pid}" data-d="-1" aria-label="Giảm">−</button><input type="number" value="${i.qty}" min="1" data-c="cartSet" data-id="${i.pid}" aria-label="Số lượng ${esc(i.p.name)}"><button data-a="cartQty" data-id="${i.pid}" data-d="1" aria-label="Tăng">+</button></div><b class="num" style="min-width:100px;text-align:right">${money(i.p.price*i.qty)}</b><button class="btn sm danger" data-a="cartDel" data-id="${i.pid}">Xóa</button></div></div>`).join('')}
+   <div class="small muted" style="text-align:right">Tạm tính ${money(t)} · Phí vận chuyển ${shipFee(t)?money(shipFee(t)):'Miễn phí'}</div></div>`}).join('')}</div>
+   <div class="panel"><h3>Tổng đơn</h3><dl class="kv"><dt>Tiền hàng</dt><dd class="num">${money(sub)}</dd><dt>Phí vận chuyển</dt><dd class="num">${money(ship)}</dd><dt>Tổng cộng</dt><dd class="price num">${money(total)}</dd></dl>
+   <p class="small muted">Mỗi người bán tạo một đơn riêng. Miễn phí vận chuyển cho đơn từ ${money(DB.settings.freeShip)} trở lên với cùng người bán.</p><a class="btn primary" href="#checkout">Tiến hành đặt hàng</a></div></div></section>`}
+function pageCheckout(){if(!me())return requireLogin('Vui lòng đăng nhập để đặt hàng.'),'';const u=me();const {sub,ship,total,g}=cartTotals();
+  if(!cart().length)return `<section class="wrap page"><div class="empty-state">Giỏ hàng trống. <a href="#market">Vào chợ rau</a></div></section>`;
+  return `<section class="wrap page"><h2>Đặt hàng</h2><form data-f="order" class="two"><div class="panel"><h3>Thông tin người mua</h3><div class="form-grid">
+   <div class="field"><label for="co-name">Họ và tên</label><input id="co-name" name="name" required value="${esc(u.name)}"></div><div class="field"><label for="co-phone">Số điện thoại</label><input id="co-phone" name="phone" required value="${esc(u.phone)}"></div>
+   <div class="field full"><label for="co-addr">Địa chỉ nhận hàng</label>${u.addresses.length?`<select id="co-addr" name="addr">${u.addresses.map(a=>`<option>${esc(a)}</option>`).join('')}<option value="__new">+ Nhập địa chỉ mới</option><option>Nhận tại vườn</option></select>`:`<input id="co-addr" name="addr" required placeholder="Số nhà, đường, phường">`}</div>
+   ${u.addresses.length?`<div class="field full"><label for="co-new">Địa chỉ mới (nếu chọn "Nhập địa chỉ mới")</label><input id="co-new" name="newaddr" placeholder="Số nhà, đường, phường"></div>`:''}
+   <div class="field full"><label for="co-note">Ghi chú giao hàng</label><input id="co-note" name="note" placeholder="Ví dụ: giao trước 8 giờ sáng"></div></div>
+   <h3>Phương thức thanh toán</h3><div class="list">${Object.entries(PAYMENT_METHODS).map(([k,m],i)=>`<label class="radio-card ${m.enabled?'':'off'}"><input type="radio" name="pay" value="${k}" ${i===0?'checked':''} ${m.enabled?'':'disabled'}><span><b>${m.label}</b><br><span class="small muted">${m.hint}</span></span></label>`).join('')}</div>
+   <div class="note-box small">Chuyển khoản: ${esc(DB.settings.bank)}. Nội dung chuyển khoản ghi mã đơn hàng.</div></div>
+   <div class="panel"><h3>Tóm tắt đơn hàng</h3>${Object.entries(g).map(([sid,items])=>`<div><b>Người bán: ${esc(uname(sid))}</b><ul style="margin:4px 0 0;padding-left:20px">${items.map(i=>`<li>${esc(i.p.name)} × ${i.qty} ${esc(i.p.unit)} – <span class="num">${money(i.p.price*i.qty)}</span></li>`).join('')}</ul></div>`).join('')}
+   <dl class="kv"><dt>Tiền hàng</dt><dd class="num">${money(sub)}</dd><dt>Phí vận chuyển</dt><dd class="num">${money(ship)}</dd><dt>Tổng thanh toán</dt><dd class="price num">${money(total)}</dd></dl><button class="btn primary">Đặt hàng (${Object.keys(g).length} đơn)</button><p class="small muted">Số lượng tồn kho chỉ bị trừ khi người bán xác nhận đơn.</p></div></form></section>`}
+
+/* ===================== ĐƠN HÀNG ===================== */
+function orderCard(o,asSeller){const idx=OFLOW.indexOf(o.status);
+  return `<div class="panel"><div class="sec-head"><div><b>Đơn ${o.id}</b> <span class="muted small">· ${fmtT(o.date)}</span><div class="small muted">${asSeller?`Người mua: ${esc(o.name)} · ${esc(o.phone)}`:`Người bán: ${esc(uname(o.sellerId))}`}</div></div>${pill(OST[o.status],OCLS[o.status])}</div>
+   <div class="steps">${o.status==='cancelled'?'<span>Đơn đã hủy</span>':OFLOW.map((s,i)=>`<span class="${i<=idx?'done':''}">${OST[s]}</span>`).join('')}</div>
+   <ul style="margin:0;padding-left:20px">${o.items.map(i=>`<li>${esc(i.name)} × ${i.qty} ${esc(i.unit)} – <span class="num">${money(i.price*i.qty)}</span></li>`).join('')}</ul>
+   <div class="meta"><span>Giao tới: ${esc(o.address)}</span><span>${PAYMENT_METHODS[o.pay].label}${o.paid?' · đã thanh toán':''}</span><span>Phí ship ${money(o.ship)}</span><b class="num" style="color:var(--ink)">Tổng ${money(o.total)}</b></div>
+   <div class="btn-row">${asSeller?sellerOrderBtns(o):buyerOrderBtns(o)}</div></div>`}
+function buyerOrderBtns(o){const b=[];if(o.status==='pending')b.push(`<button class="btn sm danger" data-a="ordSet" data-id="${o.id}" data-s="cancelled">Hủy đơn</button>`);
+  if(o.status==='delivered')b.push(`<button class="btn sm primary" data-a="ordSet" data-id="${o.id}" data-s="completed">Đã nhận hàng</button>`);
+  if(o.status==='completed')o.items.forEach(i=>{if(!DB.reviews.some(r=>r.pid===i.pid&&r.userId===o.buyerId))b.push(`<a class="btn sm" href="#sp-${i.pid}">Đánh giá ${esc(i.name)}</a>`)});
+  b.push(`<button class="btn sm" data-a="chat" data-to="${o.sellerId}" data-ctx="Về đơn hàng ${o.id}: ">Nhắn người bán</button>`);return b.join('')}
+const NEXT={pending:['confirmed','Xác nhận đơn'],confirmed:['preparing','Bắt đầu chuẩn bị hàng'],preparing:['shipping','Bắt đầu giao hàng'],shipping:['delivered','Đã giao hàng']};
+function sellerOrderBtns(o){const b=[];if(NEXT[o.status])b.push(`<button class="btn sm primary" data-a="ordSet" data-id="${o.id}" data-s="${NEXT[o.status][0]}">${NEXT[o.status][1]}</button>`);
+  if(['pending','confirmed','preparing'].includes(o.status))b.push(`<button class="btn sm danger" data-a="ordSet" data-id="${o.id}" data-s="cancelled">Hủy đơn</button>`);
+  b.push(`<button class="btn sm" data-a="chat" data-to="${o.buyerId}" data-ctx="Về đơn hàng ${o.id}: ">Nhắn người mua</button>`);return b.join('')}
+function pageOrders(){const u=me();if(!u)return `<section class="wrap page"><h2>Đơn hàng</h2><div class="empty-state">Đăng nhập để xem và theo dõi đơn hàng, đăng ký thuê đất và giao dịch mua bán đất. <a href="#login">Đăng nhập</a></div></section>`;
+  const t=state.ordTab;const ords=DB.orders.filter(o=>o.buyerId===u.id);const rs=DB.rentals.filter(r=>r.userId===u.id);const ds=DB.deals.filter(d=>d.buyerId===u.id||d.sellerId===u.id);
+  return `<section class="wrap page"><div class="sec-head"><div><h2>Đơn hàng & giao dịch của tôi</h2><p class="muted">Theo dõi đơn mua rau, đăng ký thuê đất và giao dịch đất ở cùng một chỗ.</p></div>${role()==='owner'?'<a class="btn" href="#seller">Đơn bán của tôi (Kênh chủ vườn)</a>':''}</div>
+  <div class="tabs" role="tablist">${[['buy','Đơn mua rau',ords.length],['rent','Thuê đất',rs.length],['land','Giao dịch đất',ds.length]].map(([k,l,n])=>`<button role="tab" class="${t===k?'on':''}" data-a="ordTab" data-t="${k}">${l} (${n})</button>`).join('')}</div>
+  ${t==='buy'?(ords.length?`<div class="list">${ords.map(o=>orderCard(o,false)).join('')}</div>`:'<div class="empty-state">Bạn chưa có đơn mua rau. <a href="#market">Vào chợ rau</a></div>')
+   :t==='rent'?(rs.length?`<div class="list">${rs.map(rentalRow).join('')}</div>`:'<div class="empty-state">Chưa có đăng ký thuê. <a href="#rent">Thuê đất</a></div>')
+   :(ds.length?`<div class="list">${ds.map(dealRow).join('')}</div>`:'<div class="empty-state">Chưa có giao dịch đất. <a href="#land">Mua bán đất</a></div>')}</section>`}
+
+/* ===================== TIN NHẮN ===================== */
+function threads(){const u=me(),m={};for(const x of DB.msgs){if(x.from!==u.id&&x.to!==u.id)continue;const o=x.from===u.id?x.to:x.from;if(!m[o]||m[o].time<x.time)m[o]=x}return Object.entries(m).sort((a,b)=>b[1].time.localeCompare(a[1].time))}
+function pageMessages(){const u=me();if(!u)return requireLogin('Đăng nhập để nhắn tin với người bán.'),'';const th=threads();let w=state.chatWith||th[0]?.[0];
+  if(w){DB.msgs.forEach(m=>{if(m.from===w&&m.to===u.id&&!m.read)m.read=true});save();setTimeout(()=>{renderHeader();const b=$('.msgs');if(b)b.scrollTop=b.scrollHeight},0)}
+  const conv=w?DB.msgs.filter(m=>(m.from===u.id&&m.to===w)||(m.from===w&&m.to===u.id)):[];
+  const list=th.map(([o,x])=>`<button class="${o===w?'on':''}" data-a="openThread" data-to="${o}"><b>${esc(uname(o))}</b><span class="small muted">${esc(x.text)}</span><span class="small muted">${fmtT(x.time)}${DB.msgs.some(m=>m.from===o&&m.to===u.id&&!m.read)?' · <b style="color:var(--bad)">mới</b>':''}</span></button>`);
+  if(w&&!th.some(([o])=>o===w))list.unshift(`<button class="on"><b>${esc(uname(w))}</b><span class="small muted">Cuộc trò chuyện mới</span></button>`);
+  return `<section class="wrap page"><div><h2>Tin nhắn</h2><p class="muted">Hỏi về sản phẩm, thương lượng giá và hẹn thời gian giao hàng trực tiếp với người bán.</p></div>
+  <div class="chat"><div class="threads">${list.join('')||'<p class="muted" style="padding:14px">Chưa có cuộc trò chuyện. Bấm "Nhắn tin với người bán" ở trang sản phẩm hoặc tin đăng đất.</p>'}</div>
+  <div class="conv">${w?`<div class="conv-h">${esc(uname(w))} <span class="muted small">· ${ROLE[user(w)?.role||'guest']}</span></div><div class="msgs">${conv.map(m=>`<div class="msg ${m.from===u.id?'mine':''}">${esc(m.text)}<time>${fmtT(m.time)}</time></div>`).join('')||'<p class="muted">Hãy gửi lời chào đầu tiên.</p>'}</div>
+   <div class="quick">${['Sản phẩm này còn hàng không ạ?','Có bớt giá được không ạ?','Khi nào giao được hàng ạ?','Tôi muốn nhận tại vườn.'].map(q=>`<button type="button" data-a="quickMsg" data-t="${esc(q)}">${esc(q)}</button>`).join('')}</div>
+   <form data-f="msg"><input type="hidden" name="to" value="${w}"><input id="msg-text" name="text" required autocomplete="off" placeholder="Nhập tin nhắn..." value="${esc(state.chatDraft)}" aria-label="Nội dung tin nhắn"><button class="btn primary">Gửi</button></form>`
+   :'<div class="empty-state" style="margin:20px">Chọn một cuộc trò chuyện.</div>'}</div></div>
+  <p class="small muted">Bản chạy thử: để xem phía người nhận trả lời, đăng nhập bằng tài khoản người kia.</p></section>`}
+
+/* ===================== TÀI KHOẢN ===================== */
+function pageLogin(){if(me())return `<section class="wrap page"><div class="empty-state">Bạn đã đăng nhập. <a href="#account">Xem tài khoản</a></div></section>`;const t=state.loginTab;
+  return `<section class="wrap page" style="max-width:760px"><div class="panel"><div class="tabs">${[['login','Đăng nhập'],['reg','Đăng ký'],['forgot','Quên mật khẩu']].map(([k,l])=>`<button class="${t===k?'on':''}" data-a="loginTab" data-t="${k}">${l}</button>`).join('')}</div>
+  ${t==='login'?`<form data-f="login" class="form-grid"><div class="field full"><label for="lg-id">Số điện thoại hoặc email</label><input id="lg-id" name="id" required autocomplete="username"></div><div class="field full"><label for="lg-pw">Mật khẩu</label><input id="lg-pw" name="pw" type="password" required autocomplete="current-password"></div><div class="full btn-row"><button class="btn primary">Đăng nhập</button><button type="button" class="btn" data-a="loginTab" data-t="forgot">Quên mật khẩu?</button></div></form>
+   <div><h3>Tài khoản dùng thử</h3><p class="small muted">Bấm để đăng nhập nhanh và xem website theo từng vai trò.</p></div>
+   <div class="demo-acc">${[['u1','Quản trị viên','Toàn quyền quản lý'],['u2','Chủ vườn','Nguyễn Thị Lan, ô A01, A02'],['u3','Chủ vườn','Trần Văn Hùng, ô B02'],['u4','Người mua','Lê Minh Anh']].map(([id,r,d])=>`<button data-a="demoLogin" data-id="${id}"><b>${r}</b><span class="small muted">${d}</span></button>`).join('')}</div>`
+  :t==='reg'?`<form data-f="register" class="form-grid"><div class="field full"><label for="rg-name">Họ và tên</label><input id="rg-name" name="name" required></div><div class="field"><label for="rg-phone">Số điện thoại</label><input id="rg-phone" name="phone" required inputmode="tel" placeholder="10 số, bắt đầu bằng 0"></div><div class="field"><label for="rg-email">Email (không bắt buộc)</label><input id="rg-email" name="email" type="email"></div>
+   <div class="field"><label for="rg-pw">Mật khẩu</label><input id="rg-pw" name="pw" type="password" minlength="6" required autocomplete="new-password"></div><div class="field"><label for="rg-pw2">Nhập lại mật khẩu</label><input id="rg-pw2" name="pw2" type="password" required autocomplete="new-password"></div>
+   <div class="field full"><label>Bạn muốn tham gia với vai trò</label><label class="radio-card"><input type="radio" name="role" value="buyer" checked><span><b>Người mua</b><br><span class="small muted">Thuê đất, mua đất, mua rau củ</span></span></label><label class="radio-card"><input type="radio" name="role" value="owner"><span><b>Chủ vườn</b><br><span class="small muted">Đã có ô đất tại Vườn Xanh, muốn đăng bán rau</span></span></label></div>
+   <div class="full"><button class="btn primary">Tạo tài khoản</button></div></form>`
+  :state.resetUser?`<form data-f="reset" class="form-grid"><div class="full note-box blue">Mã xác nhận đã được gửi tới số điện thoại của bạn.<br><span class="small">(Bản chạy thử không gửi SMS thật. Mã của bạn: <b class="num">${state.resetCode}</b>)</span></div><div class="field"><label for="rs-code">Mã xác nhận</label><input id="rs-code" name="code" required inputmode="numeric"></div><div class="field"><label for="rs-pw">Mật khẩu mới</label><input id="rs-pw" name="pw" type="password" minlength="6" required></div><div class="full"><button class="btn primary">Đặt lại mật khẩu</button></div></form>`
+  :`<form data-f="forgot" class="form-grid"><div class="field full"><label for="fg-id">Số điện thoại hoặc email đã đăng ký</label><input id="fg-id" name="id" required></div><div class="full"><button class="btn primary">Gửi mã xác nhận</button></div></form>`}</div></section>`}
+function pageAccount(){const u=me();if(!u)return requireLogin(),'';
+  return `<section class="wrap page"><div class="sec-head"><div><h2>Tài khoản của tôi</h2><p class="muted">${ROLE[u.role]} · tham gia từ ${fmtD(u.joined)}</p></div><button class="btn danger" data-a="logout">Đăng xuất</button></div>
+  <div class="two"><div class="panel"><h3>Thông tin cá nhân</h3><form data-f="profile" class="form-grid"><div class="field full"><label for="ac-name">Họ và tên</label><input id="ac-name" name="name" required value="${esc(u.name)}"></div><div class="field"><label for="ac-phone">Số điện thoại</label><input id="ac-phone" name="phone" required value="${esc(u.phone)}"></div><div class="field"><label for="ac-email">Email</label><input id="ac-email" name="email" type="email" value="${esc(u.email)}"></div><div class="full"><button class="btn primary">Lưu thông tin</button></div></form>
+   <h3>Đổi mật khẩu</h3><form data-f="chpw" class="form-grid"><div class="field"><label for="ac-old">Mật khẩu hiện tại</label><input id="ac-old" name="old" type="password" required></div><div class="field"><label for="ac-new">Mật khẩu mới</label><input id="ac-new" name="pw" type="password" minlength="6" required></div><div class="full"><button class="btn">Đổi mật khẩu</button></div></form></div>
+  <div class="panel"><h3>Địa chỉ nhận hàng</h3>${u.addresses.length?`<div class="list">${u.addresses.map((a,i)=>`<div class="row-item"><span>${esc(a)}</span><button class="btn sm danger" data-a="delAddr" data-i="${i}">Xóa</button></div>`).join('')}</div>`:'<p class="muted">Chưa có địa chỉ nào.</p>'}
+   <form data-f="addAddr" style="display:flex;gap:8px;flex-wrap:wrap"><input id="ac-addr" name="addr" required placeholder="Số nhà, đường, phường" style="flex:1;min-width:200px" aria-label="Địa chỉ mới"><button class="btn primary">Thêm địa chỉ</button></form>
+   <h3>Lối tắt</h3><div class="btn-row"><a class="btn" href="#orders">Đơn hàng</a><a class="btn" href="#messages">Tin nhắn</a>${u.role==='owner'?'<a class="btn" href="#seller">Kênh chủ vườn</a>':''}${u.role==='admin'?'<a class="btn" href="#admin">Trang quản trị</a>':''}</div></div></div></section>`}
+
+/* ===================== KÊNH CHỦ VƯỜN ===================== */
+function myPlots(u){return DB.plots.filter(p=>p.userId===u.id||p.ownerId===u.id)}
+function pageSeller(){const u=me();if(!u)return requireLogin(),'';if(u.role!=='owner')return `<section class="wrap page"><div class="empty-state">Kênh chủ vườn dành cho tài khoản Chủ vườn. Sau khi thuê ô đất được duyệt, tài khoản của bạn sẽ tự động được nâng cấp. <a href="#rent">Thuê đất</a></div></section>`;
+  const t=state.sellerTab,prods=DB.products.filter(p=>p.sellerId===u.id),ords=DB.orders.filter(o=>o.sellerId===u.id),pls=myPlots(u);
+  const done=ords.filter(o=>o.status==='completed'),proc=ords.filter(o=>!['completed','cancelled'].includes(o.status));
+  const rev=done.reduce((s,o)=>s+o.subtotal,0);const pend=ords.filter(o=>o.status==='pending').length;
+  const ym=new Date().toISOString().slice(0,7);const revM=done.filter(o=>o.date.slice(0,7)===ym).reduce((s,o)=>s+o.subtotal,0);
+  const tabs=[['overview','Tổng quan'],['products',`Sản phẩm (${prods.length})`],['orders','Đơn hàng',pend],['plots',`Ô đất của tôi (${pls.length})`]];
+  let body='';
+  if(t==='overview'){const by={};done.forEach(o=>o.items.forEach(i=>{by[i.name]=(by[i.name]||0)+i.price*i.qty}));const top=Object.entries(by).sort((a,b)=>b[1]-a[1]);const max=top[0]?.[1]||1;
+    body=`<div class="stats"><div class="stat"><span>Tổng doanh thu (đơn hoàn thành)</span><b class="num">${money(rev)}</b></div><div class="stat"><span>Doanh thu tháng này</span><b class="num">${money(revM)}</b></div><div class="stat earth"><span>Đơn đang xử lý</span><b class="num">${proc.length}</b></div><div class="stat earth"><span>Đơn chờ xác nhận</span><b class="num">${pend}</b></div><div class="stat"><span>Sản phẩm đang bán</span><b class="num">${prods.filter(p=>!p.hidden&&!p.adminHidden).length}</b></div></div>
+    <div class="panel"><h3>Doanh thu theo sản phẩm</h3>${top.length?top.map(([n,v])=>`<div><div style="display:flex;justify-content:space-between"><span>${esc(n)}</span><b class="num">${money(v)}</b></div><div style="height:10px;background:var(--soft);border-radius:5px"><div style="height:100%;width:${v/max*100}%;background:var(--green);border-radius:5px"></div></div></div>`).join(''):'<p class="muted">Chưa có đơn hoàn thành.</p>'}</div>`}
+  if(t==='products')body=`<div class="btn-row"><button class="btn primary" data-a="prodForm">+ Đăng sản phẩm mới</button></div>${prods.length?`<div class="table-wrap"><table><thead><tr><th>Sản phẩm</th><th>Vườn</th><th>Giá (đ)</th><th>Tồn kho</th><th>Thu hoạch</th><th>Hiển thị</th><th></th></tr></thead><tbody>${prods.map(p=>`<tr><td><b>${esc(p.name)}</b><div class="small muted">${esc(p.cat)} · /${esc(p.unit)}</div></td><td>${esc(plot(p.plotId)?.code)}</td>
+     <td><input type="number" value="${p.price}" min="0" step="1000" data-c="qPrice" data-id="${p.id}" aria-label="Giá ${esc(p.name)}"></td><td><input type="number" value="${p.qty}" min="0" data-c="qQty" data-id="${p.id}" aria-label="Tồn kho ${esc(p.name)}"></td><td>${fmtD(p.harvest)}</td>
+     <td>${p.adminHidden?pill('Bị ẩn bởi BQL','bad'):p.hidden?pill('Đang ẩn',''):pill('Đang bán','ok')}</td><td><div class="btn-row"><button class="btn sm" data-a="prodForm" data-id="${p.id}">Sửa</button><button class="btn sm" data-a="prodHide" data-id="${p.id}">${p.hidden?'Hiện':'Ẩn'}</button><button class="btn sm danger" data-a="prodDel" data-id="${p.id}">Xóa</button></div></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty-state">Bạn chưa đăng sản phẩm nào.</div>'}`;
+  if(t==='orders')body=ords.length?`<div class="list">${[...ords].sort((a,b)=>(a.status==='pending'?-1:0)-(b.status==='pending'?-1:0)||b.date.localeCompare(a.date)).map(o=>orderCard(o,true)).join('')}</div>`:'<div class="empty-state">Chưa có đơn hàng.</div>';
+  if(t==='plots')body=pls.length?`<div class="cards">${pls.map(p=>`<article class="card">${plotArt(p)}<div class="card-b"><h3>Ô ${esc(p.code)} · ${p.area} m²</h3><div class="meta"><span>${p.ownerId===u.id?'Sở hữu':'Đang thuê'}</span>${stPill(p.status)}</div>
+     <form data-f="plotCrop" style="display:flex;flex-direction:column;gap:8px"><input type="hidden" name="id" value="${p.id}"><div class="field"><label for="pc-${p.id}">Loại rau đang trồng</label><input id="pc-${p.id}" name="crop" value="${esc(p.crop)}" list="crop-list"></div><div class="field"><label for="pi-${p.id}">Ảnh thực tế</label><input id="pi-${p.id}" type="file" accept="image/*" data-into="img"><input type="hidden" name="img"><img class="img-prev" hidden alt="Ảnh xem trước"></div><button class="btn sm primary">Cập nhật</button></form></div></article>`).join('')}</div><datalist id="crop-list">${Object.keys(CROP).filter(k=>k!=='_').map(k=>`<option value="${k}">`).join('')}</datalist>`:'<div class="empty-state">Bạn chưa có ô đất nào. <a href="#rent">Thuê đất</a></div>';
+  return `<section class="wrap page"><div><span class="eyebrow">Kênh chủ vườn</span><h2>Xin chào, ${esc(u.name)}</h2></div><div class="tabs">${tabs.map(([k,l,n])=>`<button class="${t===k?'on':''}" data-a="sellerTab" data-t="${k}">${l}${n?`<span class="badge">${n}</span>`:''}</button>`).join('')}</div>${body}</section>`}
+function prodForm(id){const u=me(),p=id?prod(id):null,pls=myPlots(u);if(!pls.length){toast('Bạn cần có ô đất (sở hữu hoặc đang thuê) để đăng bán rau.');return}
+  modal(p?'Sửa sản phẩm':'Đăng sản phẩm mới',`<form data-f="product" class="form-grid"><input type="hidden" name="id" value="${p?.id||''}">
+   <div class="field"><label for="pf-name">Tên sản phẩm</label><input id="pf-name" name="name" required list="pf-names" value="${esc(p?.name||'')}" placeholder="Ví dụ: Rau muống"><datalist id="pf-names">${Object.keys(CROP).filter(k=>k!=='_').map(k=>`<option value="${k}">`).join('')}</datalist></div>
+   <div class="field"><label for="pf-plot">Khu vực trồng</label><select id="pf-plot" name="plot">${pls.map(x=>`<option value="${x.id}" ${p?.plotId===x.id?'selected':''}>Vườn ${esc(x.code)}${x.crop?' · '+esc(x.crop):''}</option>`).join('')}</select></div>
+   <div class="field"><label for="pf-cat">Loại rau</label><select id="pf-cat" name="cat">${CATS.map(c=>`<option ${p?.cat===c?'selected':''}>${c}</option>`).join('')}</select></div>
+   <div class="field"><label for="pf-unit">Đơn vị</label><select id="pf-unit" name="unit">${UNITS.map(c=>`<option ${p?.unit===c?'selected':''}>${c}</option>`).join('')}</select></div>
+   <div class="field"><label for="pf-price">Giá bán (đồng / đơn vị)</label><input id="pf-price" name="price" type="number" min="0" step="1000" required value="${p?.price||''}" placeholder="15000"></div>
+   <div class="field"><label for="pf-qty">Số lượng</label><input id="pf-qty" name="qty" type="number" min="0" required value="${p?.qty??''}" placeholder="50"></div>
+   <div class="field"><label for="pf-h">Ngày thu hoạch dự kiến</label><input id="pf-h" name="harvest" type="date" required value="${p?.harvest||dayOff(0)}"></div>
+   <div class="field"><label>Phương thức giao hàng</label>${['Giao tận nơi','Nhận tại vườn'].map(d=>`<label class="check"><input type="checkbox" name="delivery" value="${d}" ${!p||p.delivery.includes(d)?'checked':''}> ${d}</label>`).join('')}</div>
+   <div class="field full"><label for="pf-desc">Mô tả sản phẩm</label><textarea id="pf-desc" name="desc" required>${esc(p?.desc||'')}</textarea></div>
+   <div class="field full"><label for="pf-img">Hình ảnh sản phẩm</label><input id="pf-img" type="file" accept="image/*" data-into="img"><input type="hidden" name="img" value=""><img class="img-prev" ${p?.img?`src="${p.img}"`:'hidden'} alt="Ảnh xem trước"></div>
+   <div class="full btn-row"><button class="btn primary">${p?'Lưu thay đổi':'Đăng bán'}</button><button type="button" class="btn" data-a="closeModal">Hủy</button></div></form>`)}
+
+/* ===================== QUẢN TRỊ ===================== */
+function adminCounts(){return {rent:DB.rentals.filter(r=>r.status==='pending').length,list:DB.listings.filter(l=>l.status==='pending').length,deal:DB.deals.filter(d=>d.status==='agreed').length,notif:DB.notifs.filter(n=>n.to==='admin'&&!n.read).length,fb:DB.feedback.filter(f=>!f.done).length}}
+function pageAdmin(){if(role()!=='admin')return `<section class="wrap page"><div class="empty-state">Trang này chỉ dành cho quản trị viên. <a href="#login">Đăng nhập bằng tài khoản quản trị</a></div></section>`;
+  const c=adminCounts(),t=state.adminTab;
+  const tabs=[['dash','Tổng quan'],['plots','Sơ đồ & ô đất'],['rentals','Hợp đồng thuê',c.rent],['deals','Giao dịch đất',c.deal],['users','Người dùng'],['sellers','Người bán'],['products','Sản phẩm'],['orders','Đơn hàng'],['payments','Thanh toán'],['reviews','Đánh giá & phản hồi',c.fb],['posts','Kiểm duyệt tin đăng',c.list],['notifs','Thông báo',c.notif]];
+  return `<section class="wrap page"><div><span class="eyebrow">Trang quản trị</span><h2>Quản trị Vườn Xanh</h2></div><div class="side-layout"><nav class="side-nav" aria-label="Mục quản trị">${tabs.map(([k,l,n])=>`<button class="${t===k?'on':''}" data-a="adminTab" data-t="${k}">${l}${n?`<span class="badge">${n}</span>`:''}</button>`).join('')}</nav><div style="display:flex;flex-direction:column;gap:18px;min-width:0">${(ADMIN[t]||ADMIN.dash)()}</div></div></section>`}
+const ADMIN={
+ dash(){const P=DB.plots,cnt=s=>P.filter(p=>p.status===s).length,act=DB.rentals.filter(r=>r.status==='approved');
+  const rentRev=DB.rentals.filter(r=>['approved','ended'].includes(r.status)).reduce((s,r)=>s+r.total,0);const prodRev=DB.orders.filter(o=>o.status==='completed').reduce((s,o)=>s+o.subtotal,0);const c=adminCounts();
+  return `<div class="stats">${[['Tổng số ô đất',P.length],['Ô đất đang trống',cnt('empty')],['Ô đất đang cho thuê',act.length],['Ô đất đang rao bán',cnt('sale')],['Tổng số người dùng',DB.users.filter(u=>u.role!=='admin').length],['Tổng số người thuê đất',new Set(act.map(r=>r.userId)).size],['Sản phẩm đang kinh doanh',visibleProducts().filter(p=>p.qty>0).length],['Tổng số đơn hàng',DB.orders.length]].map(([l,v])=>`<div class="stat"><span>${l}</span><b class="num">${v}</b></div>`).join('')}
+   <div class="stat earth"><span>Doanh thu cho thuê đất</span><b class="num">${money(rentRev)}</b></div><div class="stat earth"><span>Doanh thu bán sản phẩm</span><b class="num">${money(prodRev)}</b></div></div>
+   <div class="panel"><h3>Việc cần xử lý</h3><div class="list">${[[c.rent,'yêu cầu thuê đất chờ duyệt','rentals'],[c.list,'tin đăng bán đất chờ kiểm duyệt','posts'],[c.deal,'giao dịch đất chờ xác nhận chuyển nhượng','deals'],[DB.orders.filter(o=>o.status==='pending').length,'đơn hàng chờ người bán xác nhận','orders'],[c.fb,'phản hồi khách hàng chưa xử lý','reviews']].map(([n,l,k])=>`<div class="row-item"><span><b class="num">${n}</b> ${l}</span><button class="btn sm" data-a="adminTab" data-t="${k}">Xem</button></div>`).join('')}</div></div>
+   <div class="panel"><h3>Sơ đồ hiện tại</h3>${legend(false)}${renderMap({admin:true,mini:true})}</div>`},
+ plots(){return `<div class="panel"><h3>Sơ đồ khu vườn</h3><p class="small muted">Bấm vào ô để sửa. Dùng nút ▲ ▼ trong bảng để đổi vị trí ô trên sơ đồ.</p>${renderMap({admin:true})}</div>
+  <div class="panel"><h3>Thêm ô đất</h3><form data-f="addPlot" class="form-grid"><div class="field"><label for="ap-side">Khu</label><select id="ap-side" name="side"><option value="A">Khu A (bên trái)</option><option value="B">Khu B (bên phải)</option></select></div><div class="field"><label for="ap-area">Diện tích (m²)</label><input id="ap-area" name="area" type="number" min="5" max="500" value="25" required></div><div class="field"><label for="ap-pm">Giá thuê / tháng (để trống = 10.000 đ/m²)</label><input id="ap-pm" name="pm" type="number" min="0" step="10000"></div><div class="field" style="justify-content:end"><button class="btn primary">Thêm ô đất</button></div></form></div>
+  <div class="table-wrap"><table><thead><tr><th>Mã</th><th>Vị trí</th><th>Diện tích</th><th>Giá thuê/tháng</th><th>Trạng thái</th><th>Người dùng</th><th>Sắp xếp</th><th></th></tr></thead><tbody>${['A','B'].flatMap(s=>sidePlots(s)).map(p=>`<tr><td><b>${esc(p.code)}</b></td><td class="small">${posText(p)}</td><td class="num">${p.area} m²</td><td class="num">${money(p.priceMonth)}</td>
+   <td><select data-c="plotStatus" data-id="${p.id}" aria-label="Trạng thái ${esc(p.code)}">${Object.entries(PST).map(([k,s])=>`<option value="${k}" ${p.status===k?'selected':''}>${s.t}</option>`).join('')}</select></td><td>${p.userId?esc(uname(p.userId)):'<span class="muted">–</span>'}</td>
+   <td><div class="btn-row"><button class="btn sm" data-a="movePlot" data-id="${p.id}" data-d="-1" aria-label="Lên">▲</button><button class="btn sm" data-a="movePlot" data-id="${p.id}" data-d="1" aria-label="Xuống">▼</button></div></td><td><div class="btn-row"><button class="btn sm" data-a="editPlot" data-id="${p.id}">Sửa</button><button class="btn sm danger" data-a="delPlot" data-id="${p.id}">Xóa</button></div></td></tr>`).join('')}</tbody></table></div>`},
+ rentals(){const l=[...DB.rentals].sort((a,b)=>(a.status==='pending'?-1:1)-(b.status==='pending'?-1:1));return l.length?`<div class="table-wrap"><table><thead><tr><th>Mã HĐ</th><th>Ô đất</th><th>Người thuê</th><th>Thời hạn</th><th>Số tiền</th><th>Ngày gửi</th><th>Trạng thái</th><th></th></tr></thead><tbody>${l.map(r=>`<tr><td>${r.id}</td><td><b>${esc(plot(r.plotId)?.code||'(đã xóa)')}</b></td><td>${esc(r.name)}<div class="small muted num">${esc(r.phone)}</div>${r.note?`<div class="small">"${esc(r.note)}"</div>`:''}</td><td>${TERMS[r.term]}</td><td class="num">${money(r.total)}</td><td>${fmtD(r.date)}</td><td>${pill(...RST[r.status])}</td>
+   <td><div class="btn-row">${r.status==='pending'?`<button class="btn sm primary" data-a="rentApprove" data-id="${r.id}">Xác nhận</button><button class="btn sm danger" data-a="rentReject" data-id="${r.id}">Từ chối</button>`:''}${r.status==='approved'?`<button class="btn sm" data-a="rentEnd" data-id="${r.id}">Kết thúc HĐ</button>`:''}</div></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty-state">Chưa có hợp đồng thuê.</div>'},
+ deals(){return DB.deals.length?`<div class="note-box blue">Trước khi xác nhận chuyển nhượng, Ban quản lý kiểm tra giấy tờ sở hữu của người bán và biên bản thỏa thuận giữa hai bên.</div><div class="table-wrap"><table><thead><tr><th>Mã GD</th><th>Ô đất</th><th>Người bán</th><th>Người mua</th><th>Giá</th><th>Ngày</th><th>Trạng thái</th><th></th></tr></thead><tbody>${DB.deals.map(d=>`<tr><td>${d.id}</td><td><b>${esc(plot(d.plotId)?.code)}</b></td><td>${esc(uname(d.sellerId))}</td><td>${esc(uname(d.buyerId))}</td><td class="num">${money(d.offer)}</td><td>${fmtD(d.date)}</td><td>${pill(...DST[d.status])}</td>
+   <td><div class="btn-row">${d.status==='agreed'?`<button class="btn sm primary" data-a="dealConfirm" data-id="${d.id}">Xác nhận chuyển nhượng</button><button class="btn sm danger" data-a="dealCancelAdmin" data-id="${d.id}">Hủy</button>`:''}${d.status==='requested'?`<button class="btn sm danger" data-a="dealCancelAdmin" data-id="${d.id}">Hủy</button>`:''}</div></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty-state">Chưa có giao dịch đất.</div>'},
+ users(){const f=state.userRoleFilter;const l=DB.users.filter(u=>!f||u.role===f);return `<div class="filters"><div class="field"><label for="uf">Lọc theo vai trò</label><select id="uf" data-c="userFilter"><option value="">Tất cả</option>${['admin','owner','buyer'].map(r=>`<option value="${r}" ${f===r?'selected':''}>${ROLE[r]}</option>`).join('')}</select></div></div>
+   <div class="table-wrap"><table><thead><tr><th>Họ tên</th><th>Liên hệ</th><th>Vai trò</th><th>Ngày tham gia</th><th>Trạng thái</th><th></th></tr></thead><tbody>${l.map(u=>`<tr><td><b>${esc(u.name)}</b></td><td class="num small">${esc(u.phone)}<br>${esc(u.email)}</td>
+   <td>${u.id===DB.session?ROLE[u.role]:`<select data-c="userRole" data-id="${u.id}" aria-label="Vai trò ${esc(u.name)}">${['admin','owner','buyer'].map(r=>`<option value="${r}" ${u.role===r?'selected':''}>${ROLE[r]}</option>`).join('')}</select>`}</td><td>${fmtD(u.joined)}</td><td>${u.locked?pill('Đã khóa','bad'):pill('Hoạt động','ok')}</td>
+   <td><div class="btn-row">${u.id!==DB.session?`<button class="btn sm ${u.locked?'':'danger'}" data-a="userLock" data-id="${u.id}">${u.locked?'Mở khóa':'Khóa tài khoản'}</button>`:''}<button class="btn sm" data-a="chat" data-to="${u.id}">Nhắn tin</button></div></td></tr>`).join('')}</tbody></table></div>`},
+ sellers(){const l=DB.users.filter(u=>u.role==='owner');return `<div class="table-wrap"><table><thead><tr><th>Chủ vườn</th><th>Ô đất</th><th>Sản phẩm</th><th>Đơn hàng</th><th>Doanh thu</th><th>Đánh giá TB</th><th>Trạng thái</th><th></th></tr></thead><tbody>${l.map(u=>{const ps=DB.products.filter(p=>p.sellerId===u.id),os=DB.orders.filter(o=>o.sellerId===u.id),rv=DB.reviews.filter(r=>ps.some(p=>p.id===r.pid));
+   return `<tr><td><b>${esc(u.name)}</b><div class="small muted num">${esc(u.phone)}</div></td><td>${myPlots(u).map(p=>esc(p.code)).join(', ')||'–'}</td><td class="num">${ps.length}</td><td class="num">${os.length}</td><td class="num">${money(os.filter(o=>o.status==='completed').reduce((s,o)=>s+o.subtotal,0))}</td><td>${rv.length?(rv.reduce((s,r)=>s+r.rating,0)/rv.length).toFixed(1)+' ★':'–'}</td><td>${u.locked?pill('Đã khóa','bad'):pill('Hoạt động','ok')}</td><td><button class="btn sm ${u.locked?'':'danger'}" data-a="userLock" data-id="${u.id}">${u.locked?'Mở khóa':'Khóa'}</button></td></tr>`}).join('')}</tbody></table></div>`},
+ products(){return `<div class="table-wrap"><table><thead><tr><th>Sản phẩm</th><th>Người bán</th><th>Vườn</th><th>Giá</th><th>Tồn</th><th>Đã bán</th><th>Trạng thái</th><th></th></tr></thead><tbody>${DB.products.map(p=>`<tr><td><a href="#sp-${p.id}"><b>${esc(p.name)}</b></a></td><td>${esc(uname(p.sellerId))}</td><td>${esc(plot(p.plotId)?.code)}</td><td class="num">${money(p.price)}/${esc(p.unit)}</td><td class="num">${p.qty}</td><td class="num">${prodSold(p.id)}</td><td>${p.adminHidden?pill('BQL ẩn','bad'):p.hidden?pill('Người bán ẩn',''):pill('Đang bán','ok')}</td>
+   <td><div class="btn-row"><button class="btn sm" data-a="adminHideProd" data-id="${p.id}">${p.adminHidden?'Cho hiển thị lại':'Ẩn (vi phạm)'}</button><button class="btn sm danger" data-a="prodDel" data-id="${p.id}">Xóa</button></div></td></tr>`).join('')}</tbody></table></div>`},
+ orders(){const f=state.adminOrderFilter;const l=DB.orders.filter(o=>!f||o.status===f);return `<div class="filters"><div class="field"><label for="of">Lọc trạng thái</label><select id="of" data-c="orderFilter"><option value="">Tất cả (${DB.orders.length})</option>${Object.entries(OST).map(([k,v])=>`<option value="${k}" ${f===k?'selected':''}>${v} (${DB.orders.filter(o=>o.status===k).length})</option>`).join('')}</select></div></div>
+   <div class="table-wrap"><table><thead><tr><th>Mã đơn</th><th>Ngày</th><th>Người mua</th><th>Người bán</th><th>Sản phẩm</th><th>Tổng</th><th>Trạng thái</th></tr></thead><tbody>${l.map(o=>`<tr><td><b>${o.id}</b></td><td>${fmtD(o.date)}</td><td>${esc(o.name)}</td><td>${esc(uname(o.sellerId))}</td><td class="small">${o.items.map(i=>`${esc(i.name)} ×${i.qty}`).join(', ')}</td><td class="num">${money(o.total)}</td>
+   <td><select data-c="adminOrdStatus" data-id="${o.id}" aria-label="Trạng thái đơn ${o.id}">${Object.entries(OST).map(([k,v])=>`<option value="${k}" ${o.status===k?'selected':''}>${v}</option>`).join('')}</select></td></tr>`).join('')||'<tr><td colspan="7" class="muted">Không có đơn.</td></tr>'}</tbody></table></div>`},
+ payments(){const rows=[...DB.orders.filter(o=>o.status!=='cancelled').map(o=>({k:'o',id:o.id,type:'Bán rau',who:o.name,method:PAYMENT_METHODS[o.pay].label,amt:o.total,paid:o.paid,date:o.date})),...DB.rentals.filter(r=>r.status!=='rejected').map(r=>({k:'r',id:r.id,type:'Thuê đất',who:r.name,method:'Thanh toán tại văn phòng / chuyển khoản',amt:r.total,paid:r.paid,date:r.date}))].sort((a,b)=>b.date.localeCompare(a.date));
+   const paid=rows.filter(r=>r.paid).reduce((s,r)=>s+r.amt,0),unpaid=rows.filter(r=>!r.paid).reduce((s,r)=>s+r.amt,0);
+   return `<div class="stats"><div class="stat"><span>Đã thu</span><b class="num">${money(paid)}</b></div><div class="stat earth"><span>Chưa thu</span><b class="num">${money(unpaid)}</b></div><div class="stat"><span>Cổng thanh toán trực tuyến</span><b style="font-size:1rem">Chưa tích hợp</b></div></div>
+   <div class="table-wrap"><table><thead><tr><th>Mã</th><th>Loại</th><th>Người trả</th><th>Phương thức</th><th>Số tiền</th><th>Ngày</th><th>Trạng thái</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.id}</td><td>${r.type}</td><td>${esc(r.who)}</td><td class="small">${r.method}</td><td class="num">${money(r.amt)}</td><td>${fmtD(r.date)}</td><td><button class="btn sm ${r.paid?'':'primary'}" data-a="togglePaid" data-k="${r.k}" data-id="${r.id}">${r.paid?'Đã thanh toán ✓':'Đánh dấu đã thu'}</button></td></tr>`).join('')}</tbody></table></div>`},
+ reviews(){return `<div class="panel"><h3>Phản hồi từ khách hàng</h3>${DB.feedback.length?`<div class="list">${DB.feedback.map(f=>`<div class="row-item"><div><b>${esc(f.name)}</b> <span class="small muted num">${esc(f.phone)} · ${fmtT(f.time)}</span><div>${esc(f.text)}</div></div><button class="btn sm ${f.done?'':'primary'}" data-a="fbDone" data-id="${f.id}">${f.done?'Đã xử lý ✓':'Đánh dấu đã xử lý'}</button></div>`).join('')}</div>`:'<p class="muted">Chưa có phản hồi. Khách gửi phản hồi qua mục "Hỗ trợ khách hàng" ở cuối trang.</p>'}</div>
+   <div class="table-wrap"><table><thead><tr><th>Sản phẩm</th><th>Người đánh giá</th><th>Số sao</th><th>Nội dung</th><th>Ngày</th><th></th></tr></thead><tbody>${DB.reviews.map(r=>`<tr><td>${esc(prod(r.pid)?.name||'(đã xóa)')}</td><td>${esc(uname(r.userId))}</td><td>${stars(r.rating)}</td><td>${esc(r.text)}</td><td>${fmtD(r.date)}</td><td><button class="btn sm" data-a="revHide" data-id="${r.id}">${r.hidden?'Hiện lại':'Ẩn'}</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">Chưa có đánh giá.</td></tr>'}</tbody></table></div>`},
+ posts(){const l=[...DB.listings].sort((a,b)=>(a.status==='pending'?-1:1)-(b.status==='pending'?-1:1));return `<div class="note-box">Chỉ duyệt tin khi người đăng là chủ sở hữu được ghi nhận của ô đất. Hệ thống tự kiểm tra và cảnh báo nếu không khớp.</div>
+   <div class="table-wrap"><table><thead><tr><th>Mã tin</th><th>Ô đất</th><th>Người đăng</th><th>Chủ sở hữu ghi nhận</th><th>Giá</th><th>Mô tả</th><th>Trạng thái</th><th></th></tr></thead><tbody>${l.map(x=>{const p=plot(x.plotId),ok=p&&p.ownerId===x.sellerId;
+   return `<tr><td>${x.id}</td><td><b>${esc(p?.code)}</b></td><td>${esc(uname(x.sellerId))}</td><td>${esc(uname(p?.ownerId))} ${ok?pill('Khớp','ok'):pill('Không khớp','bad')}</td><td class="num">${money(x.price)}</td><td class="small" style="max-width:260px">${esc(x.desc)}</td><td>${pill(...LST[x.status])}</td>
+   <td><div class="btn-row">${x.status==='pending'?`<button class="btn sm primary" data-a="listApprove" data-id="${x.id}" ${ok?'':'disabled'}>Duyệt</button><button class="btn sm danger" data-a="listReject" data-id="${x.id}">Từ chối</button>`:''}${x.status==='approved'?`<button class="btn sm danger" data-a="withdrawListing" data-id="${x.id}">Gỡ tin</button>`:''}</div></td></tr>`}).join('')}</tbody></table></div>`},
+ notifs(){const l=DB.notifs.filter(n=>n.to==='admin');return `<div class="panel"><h3>Gửi thông báo</h3><form data-f="broadcast" class="form-grid"><div class="field"><label for="bc-to">Gửi tới</label><select id="bc-to" name="to"><option value="all">Tất cả người dùng</option><option value="owner">Chủ vườn</option><option value="buyer">Người mua</option></select></div><div class="field"><label for="bc-t">Nội dung</label><input id="bc-t" name="text" required placeholder="Ví dụ: Chủ nhật này vườn cắt nước từ 8h–11h"></div><div class="full"><button class="btn primary">Gửi thông báo</button></div></form></div>
+   <div class="panel"><div class="sec-head"><h3>Hộp thư thông báo của Ban quản lý</h3><button class="btn sm" data-a="readAllAdmin">Đánh dấu đã đọc tất cả</button></div>${l.length?`<div class="list">${l.map(n=>`<div class="row-item"><div>${n.read?'':'<b style="color:var(--bad)">Mới · </b>'}${esc(n.text)}<div class="small muted">${fmtT(n.time)}</div></div></div>`).join('')}</div>`:'<p class="muted">Không có thông báo.</p>'}</div>`}
+};
+function plotEditForm(id){const p=id?plot(id):null;if(!p)return;const opts=(sel,none)=>`<option value="">${none}</option>`+DB.users.filter(u=>u.role!=='admin').map(u=>`<option value="${u.id}" ${sel===u.id?'selected':''}>${esc(u.name)}</option>`).join('');
+  modal(`Sửa ô đất ${esc(p.code)}`,`<form data-f="editPlot" class="form-grid"><input type="hidden" name="id" value="${p.id}">
+   <div class="field"><label for="ep-code">Mã ô đất</label><input id="ep-code" name="code" required value="${esc(p.code)}"></div><div class="field"><label for="ep-area">Diện tích (m²)</label><input id="ep-area" name="area" type="number" min="5" max="500" required value="${p.area}"></div>
+   <div class="field"><label for="ep-pm">Giá thuê / tháng</label><input id="ep-pm" name="pm" type="number" min="0" step="10000" required value="${p.priceMonth}"></div><div class="field"><label for="ep-py">Giá thuê / năm</label><input id="ep-py" name="py" type="number" min="0" step="10000" required value="${p.priceYear}"></div>
+   <div class="field"><label for="ep-st">Trạng thái</label><select id="ep-st" name="status">${Object.entries(PST).map(([k,s])=>`<option value="${k}" ${p.status===k?'selected':''}>${s.t}</option>`).join('')}</select></div><div class="field"><label for="ep-crop">Loại rau đang trồng</label><input id="ep-crop" name="crop" value="${esc(p.crop)}"></div>
+   <div class="field"><label for="ep-user">Người đang sử dụng</label><select id="ep-user" name="userId">${opts(p.userId,'Chưa có')}</select></div><div class="field"><label for="ep-own">Chủ sở hữu (quyền chuyển nhượng)</label><select id="ep-own" name="ownerId">${opts(p.ownerId,'Ban quản lý Vườn Xanh')}</select></div>
+   <div class="field full"><label for="ep-note">Ghi chú (hiển thị công khai)</label><input id="ep-note" name="note" value="${esc(p.note)}" placeholder="Ví dụ: đang cải tạo hệ thống tưới"></div>
+   <div class="field full"><label for="ep-img">Hình ảnh thực tế</label><input id="ep-img" type="file" accept="image/*" data-into="img"><input type="hidden" name="img"><img class="img-prev" ${p.img?`src="${p.img}"`:'hidden'} alt="Ảnh xem trước">${p.img?`<label class="check"><input type="checkbox" name="rmimg"> Xóa ảnh hiện tại</label>`:''}</div>
+   <div class="full btn-row"><button class="btn primary">Lưu thay đổi</button><button type="button" class="btn danger" data-a="delPlot" data-id="${p.id}">Xóa ô đất</button><button type="button" class="btn" data-a="closeModal">Hủy</button></div></form>`)}
+function myNotifs(){const u=me();if(!u)return [];return DB.notifs.filter(n=>n.to===u.id||n.to==='all'+'|'+u.id||(u.role==='admin'&&n.to==='admin'))}
+
+/* ===================== HÀNH ĐỘNG ===================== */
+function setOrderStatus(o,s,by){if(o.status===s)return true;
+  if(s==='confirmed'&&!o.stockDeducted){for(const i of o.items){const p=prod(i.pid);if(!p||p.qty<i.qty){toast(`Không đủ tồn kho cho "${i.name}" (còn ${p?p.qty:0}). Hãy cập nhật số lượng trước khi xác nhận.`);return false}}
+    o.items.forEach(i=>prod(i.pid).qty-=i.qty);o.stockDeducted=true}
+  if(s==='cancelled'&&o.stockDeducted){o.items.forEach(i=>{const p=prod(i.pid);if(p)p.qty+=i.qty});o.stockDeducted=false}
+  if(['preparing','shipping','delivered','completed'].includes(s)&&!o.stockDeducted){if(!setOrderStatus(o,'confirmed',by))return false}
+  o.status=s;o.history.push({s,t:now()});if(s==='completed'&&o.pay==='cod')o.paid=true;
+  if(by!==o.buyerId)notify(o.buyerId,`Đơn ${o.id}: ${OST[s]}.`,'orders');if(by!==o.sellerId)notify(o.sellerId,`Đơn ${o.id}: ${OST[s]} (cập nhật bởi ${by===o.buyerId?'người mua':'Ban quản lý'}).`,'seller');return true}
+const A={
+ menu(){state.menuOpen=!state.menuOpen;renderHeader()},
+ closeModal, closeModalBg(d,t,e){if(e.target===t)closeModal()},
+ plot(d){plotModal(d.id)}, locate(d){const p=plot(d.id);modal(`Vị trí ô ${esc(p.code)} trên sơ đồ`,`<p>${posText(p)}</p>${renderMap({highlight:p.id,mini:true})}<div class="btn-row">${p.status==='empty'?`<button class="btn primary" data-a="rent" data-id="${p.id}">Đăng ký thuê ô này</button>`:''}<button class="btn" data-a="closeModal">Đóng</button></div>`)},
+ mapFilter(d){state.mapFilter=d.s&&state.mapFilter!==d.s?d.s:null;render()},
+ rent(d){if(!requireLogin('Vui lòng đăng nhập để đăng ký thuê đất.'))return;const p=plot(d.id);if(p.status!=='empty'){toast('Ô đất này hiện không còn trống.');return}modal(`Đăng ký thuê ô ${esc(p.code)}`,rentForm(p))},
+ landDetail(d){landDetail(d.id)},
+ withdrawListing(d){const l=DB.listings.find(x=>x.id===d.id);const p=plot(l.plotId);if(l.status==='approved'){p.status=p.prevStatus||(p.userId?'used':'empty');p.salePrice=0}l.status='withdrawn';
+   DB.deals.filter(x=>x.listingId===l.id&&['requested','agreed'].includes(x.status)).forEach(x=>{x.status='cancelled';notify(x.buyerId,`Tin bán ô ${p.code} đã gỡ, yêu cầu mua của bạn bị hủy.`,'land')});save();toast('Đã gỡ tin đăng.');render()},
+ dealAgree(d){const x=DB.deals.find(y=>y.id===d.id);x.status='agreed';notify('admin',`Giao dịch ${x.id}: ${uname(x.sellerId)} đồng ý bán ô ${plot(x.plotId).code} cho ${uname(x.buyerId)}. Chờ xác nhận chuyển nhượng.`,'admin');notify(x.buyerId,`Người bán đồng ý bán ô ${plot(x.plotId).code}. Ban quản lý sẽ liên hệ để làm thủ tục.`,'land');save();toast('Đã đồng ý. Ban quản lý sẽ xác nhận chuyển nhượng.');render()},
+ dealDecline(d){const x=DB.deals.find(y=>y.id===d.id);x.status='declined';notify(x.buyerId,`Người bán từ chối yêu cầu mua ô ${plot(x.plotId).code}.`,'land');save();render()},
+ dealCancel(d){const x=DB.deals.find(y=>y.id===d.id);x.status='cancelled';notify(x.sellerId,`${uname(x.buyerId)} đã hủy yêu cầu mua ô ${plot(x.plotId).code}.`,'land');save();render()},
+ dealCancelAdmin(d){const x=DB.deals.find(y=>y.id===d.id);x.status='cancelled';[x.buyerId,x.sellerId].forEach(u=>notify(u,`Ban quản lý đã hủy giao dịch ${x.id} (ô ${plot(x.plotId).code}).`,'land'));save();render()},
+ dealConfirm(d){const x=DB.deals.find(y=>y.id===d.id),l=DB.listings.find(y=>y.id===x.listingId),p=plot(x.plotId);
+   if(p.ownerId!==x.sellerId){toast('Người bán không còn là chủ sở hữu ghi nhận của ô đất này. Không thể chuyển nhượng.');return}
+   x.status='completed';l.status='sold';p.ownerId=x.buyerId;p.userId=x.buyerId;p.status='used';p.salePrice=0;p.crop=p.crop||'Chưa trồng';
+   DB.deals.filter(y=>y.listingId===l.id&&y.id!==x.id&&['requested','agreed'].includes(y.status)).forEach(y=>{y.status='cancelled';notify(y.buyerId,`Ô ${p.code} đã được chuyển nhượng cho người khác.`,'land')});
+   const b=user(x.buyerId);if(b.role==='buyer')b.role='owner';notify(x.buyerId,`Chúc mừng! Bạn đã trở thành chủ sở hữu ô ${p.code}.`,'seller');notify(x.sellerId,`Đã hoàn tất chuyển nhượng ô ${p.code} với giá ${money(x.offer)}.`,'land');save();toast(`Đã xác nhận chuyển nhượng ô ${p.code}.`);render()},
+ addCart(d){const p=prod(d.id);let q=1;if(d.q){q=Math.max(1,parseInt($(d.q).value)||1)}const c=cart(),it=c.find(i=>i.pid===p.id);const cur=it?it.qty:0;
+   if(me()&&p.sellerId===me().id){toast('Bạn không thể mua sản phẩm của chính mình.');return}
+   if(cur+q>p.qty){toast(`Chỉ còn ${p.qty} ${p.unit}.`);return}if(it)it.qty+=q;else c.push({pid:p.id,qty:q});save();renderHeader();toast(`Đã thêm ${q} ${p.unit} ${p.name} vào giỏ hàng.`)},
+ buyNow(d){A.addCart({...d,q:'#pd-qty'});if(cart().some(i=>i.pid===d.id))go('cart')},
+ qtyStep(d,t){const inp=t.parentElement.querySelector('input');inp.value=Math.max(1,Math.min(+inp.max||999,(+inp.value||1)+ +d.d))},
+ cartQty(d){const it=cart().find(i=>i.pid===d.id),p=prod(d.id);it.qty=Math.max(1,Math.min(p.qty,it.qty+ +d.d));if(it.qty===p.qty&&+d.d>0)toast(`Tối đa ${p.qty} ${p.unit}.`);save();render()},
+ cartDel(d){DB.carts[cartKey()]=cart().filter(i=>i.pid!==d.id);save();render()},
+ ordTab(d){state.ordTab=d.t;render()},
+ ordSet(d){const o=DB.orders.find(x=>x.id===d.id);if(setOrderStatus(o,d.s,me().id)){save();toast(`Đơn ${o.id}: ${OST[d.s]}.`);render()}},
+ chat(d){if(!requireLogin('Đăng nhập để nhắn tin.'))return;if(d.to===me().id){toast('Đây là tài khoản của bạn.');return}state.chatWith=d.to;state.chatDraft=d.ctx||'';closeModal();go('messages')},
+ openThread(d){state.chatWith=d.to;state.chatDraft='';render()},
+ quickMsg(d){const i=$('#msg-text');i.value=(i.value?i.value+' ':'')+d.t;i.focus()},
+ notifs(){const l=myNotifs();modal('Thông báo',l.length?`<div class="list">${l.slice(0,30).map(n=>`<div class="row-item"><div>${n.read?'':'<b style="color:var(--bad)">Mới · </b>'}${esc(n.text)}<div class="small muted">${fmtT(n.time)}</div></div>${n.link?`<button class="btn sm" data-a="goNotif" data-l="${n.link}">Xem</button>`:''}</div>`).join('')}</div>`:'<p class="muted">Chưa có thông báo.</p>');l.forEach(n=>n.read=true);save();renderHeader()},
+ goNotif(d){closeModal();go(d.l)},
+ loginTab(d){state.loginTab=d.t;state.resetUser=null;render()},
+ demoLogin(d){doLogin(user(d.id))},
+ logout(){DB.session=null;state.chatWith=null;save();toast('Đã đăng xuất.');go('home')},
+ delAddr(d){me().addresses.splice(+d.i,1);save();render()},
+ sellerTab(d){state.sellerTab=d.t;render()},
+ prodForm(d){prodForm(d.id)},
+ prodHide(d){const p=prod(d.id);p.hidden=!p.hidden;save();toast(p.hidden?'Đã ẩn sản phẩm khỏi chợ.':'Sản phẩm đã hiển thị lại.');render()},
+ prodDel(d){const p=prod(d.id);if(DB.orders.some(o=>o.items.some(i=>i.pid===p.id)&&!['completed','cancelled'].includes(o.status))){toast('Sản phẩm đang có đơn chưa hoàn thành. Hãy ẩn sản phẩm thay vì xóa.');return}confirmBox(`Xóa sản phẩm <b>${esc(p.name)}</b>? Không thể hoàn tác.`,'prodDelYes',{id:p.id},'Xóa sản phẩm')},
+ prodDelYes(d){DB.products=DB.products.filter(p=>p.id!==d.id);Object.values(DB.carts).forEach(c=>{for(let i=c.length-1;i>=0;i--)if(c[i].pid===d.id)c.splice(i,1)});save();closeModal();toast('Đã xóa sản phẩm.');render()},
+ adminTab(d){state.adminTab=d.t;render();window.scrollTo(0,0)},
+ editPlot(d){plotEditForm(d.id)},
+ movePlot(d){const p=plot(d.id),l=sidePlots(p.side),i=l.indexOf(p),j=i+ +d.d;if(j<0||j>=l.length)return;[l[i].order,l[j].order]=[l[j].order,l[i].order];save();render()},
+ delPlot(d){const p=plot(d.id);if(['pending','used'].includes(p.status)&&DB.rentals.some(r=>r.plotId===p.id&&['pending','approved'].includes(r.status))){toast(`Ô ${p.code} đang có hợp đồng thuê hoặc yêu cầu thuê. Kết thúc hợp đồng trước khi xóa.`);return}
+   if(DB.listings.some(l=>l.plotId===p.id&&['pending','approved'].includes(l.status))){toast(`Ô ${p.code} đang có tin rao bán. Gỡ tin trước khi xóa.`);return}confirmBox(`Xóa ô đất <b>${esc(p.code)}</b> khỏi sơ đồ? Không thể hoàn tác.`,'delPlotYes',{id:p.id},'Xóa ô đất')},
+ delPlotYes(d){const p=plot(d.id);DB.plots=DB.plots.filter(x=>x.id!==d.id);sidePlots(p.side).forEach((x,i)=>x.order=i);save();closeModal();toast(`Đã xóa ô ${p.code}.`);render()},
+ rentApprove(d){const r=DB.rentals.find(x=>x.id===d.id),p=plot(r.plotId);r.status='approved';r.start=now();p.status='used';p.userId=r.userId;p.pendingBy=null;p.crop=p.crop||'Chưa trồng';
+   const u=user(r.userId);let up='';if(u.role==='buyer'){u.role='owner';up=' Tài khoản của bạn đã được nâng cấp thành Chủ vườn, có thể đăng bán rau.'}notify(r.userId,`Yêu cầu thuê ô ${p.code} đã được xác nhận.${up}`,'orders');save();toast(`Đã xác nhận cho thuê ô ${p.code}.`);render()},
+ rentReject(d){const r=DB.rentals.find(x=>x.id===d.id),p=plot(r.plotId);r.status='rejected';if(p&&p.status==='pending'){p.status='empty';p.pendingBy=null}notify(r.userId,`Yêu cầu thuê ô ${p?.code} chưa được chấp nhận. Vui lòng liên hệ Ban quản lý để biết thêm.`,'orders');save();render()},
+ rentEnd(d){const r=DB.rentals.find(x=>x.id===d.id),p=plot(r.plotId);r.status='ended';if(p&&p.userId===r.userId&&p.ownerId!==r.userId){p.status='empty';p.userId=null;p.crop=''}notify(r.userId,`Hợp đồng thuê ô ${p?.code} đã kết thúc.`,'orders');save();render()},
+ userLock(d){const u=user(d.id);u.locked=!u.locked;save();toast(u.locked?`Đã khóa tài khoản ${u.name}. Sản phẩm của họ bị ẩn khỏi chợ.`:`Đã mở khóa ${u.name}.`);render()},
+ adminHideProd(d){const p=prod(d.id);p.adminHidden=!p.adminHidden;notify(p.sellerId,p.adminHidden?`Sản phẩm "${p.name}" bị Ban quản lý tạm ẩn. Vui lòng liên hệ để biết lý do.`:`Sản phẩm "${p.name}" đã được hiển thị lại.`,'seller');save();render()},
+ togglePaid(d){const x=d.k==='o'?DB.orders.find(o=>o.id===d.id):DB.rentals.find(r=>r.id===d.id);x.paid=!x.paid;save();render()},
+ fbDone(d){const f=DB.feedback.find(x=>x.id===d.id);f.done=!f.done;save();render()},
+ revHide(d){const r=DB.reviews.find(x=>x.id===d.id);r.hidden=!r.hidden;save();render()},
+ listApprove(d){const l=DB.listings.find(x=>x.id===d.id),p=plot(l.plotId);if(p.ownerId!==l.sellerId){toast('Người đăng không phải chủ sở hữu ghi nhận. Không thể duyệt.');return}
+   l.status='approved';p.prevStatus=p.status==='sale'?p.prevStatus:p.status;p.status='sale';p.salePrice=l.price;notify(l.sellerId,`Tin đăng bán ô ${p.code} đã được duyệt và hiển thị công khai.`,'land');save();toast(`Đã duyệt tin bán ô ${p.code}.`);render()},
+ listReject(d){modal('Từ chối tin đăng',`<form data-f="listReject" class="form-grid"><input type="hidden" name="id" value="${d.id}"><div class="field full"><label for="lr-r">Lý do từ chối</label><input id="lr-r" name="reason" required value="Chưa đủ giấy tờ chứng minh quyền sở hữu"></div><div class="full btn-row"><button class="btn danger">Từ chối tin</button><button type="button" class="btn" data-a="closeModal">Hủy</button></div></form>`)},
+ readAllAdmin(){DB.notifs.forEach(n=>{if(n.to==='admin')n.read=true});save();render()},
+ policy(d){const P={rent:['Chính sách thuê đất',['Thời hạn thuê: 1 tháng, 6 tháng (giảm 5%) hoặc 1 năm (tặng 2 tháng).','Giá thuê đã gồm nước tưới, lối đi chung, nhà kho dụng cụ và bảo vệ.','Người thuê chỉ được trồng rau, cây ngắn ngày; không xây dựng công trình kiên cố, không dùng hóa chất cấm.','Người thuê không được cho thuê lại hoặc chuyển nhượng ô đất thuê.','Báo trước 15 ngày nếu muốn chấm dứt hợp đồng trước hạn.']],
+   sale:['Chính sách mua bán',['Chỉ chủ sở hữu hoặc người được ủy quyền hợp lệ mới được đăng bán ô đất.','Mọi tin đăng bán đất được Ban quản lý kiểm duyệt trước khi hiển thị.','Giao dịch đất chỉ hoàn tất khi Ban quản lý xác nhận chuyển nhượng.','Nông sản phải ghi rõ ô đất trồng, ngày thu hoạch và đúng mô tả.','Tồn kho được trừ khi người bán xác nhận đơn, hoàn lại nếu đơn bị hủy.']],
+   ship:['Giao hàng & đổi trả',['Phí vận chuyển 15.000 đ mỗi đơn, miễn phí cho đơn từ 200.000 đ với cùng người bán.','Có thể chọn nhận rau trực tiếp tại vườn.','Rau bị dập, héo khi nhận: báo người bán trong 2 giờ để được đổi hoặc hoàn tiền.']]}[d.k];
+   modal(P[0],`<ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">${P[1].map(x=>`<li>${x}</li>`).join('')}</ul>`)},
+ support(){const u=me();modal('Hỗ trợ khách hàng',`<p>Gọi hotline <b class="num">0900 000 001</b> (5:30 – 18:30) hoặc gửi phản hồi cho Ban quản lý:</p><form data-f="feedback" class="form-grid"><div class="field"><label for="fb-n">Họ tên</label><input id="fb-n" name="name" required value="${esc(u?.name||'')}"></div><div class="field"><label for="fb-p">Số điện thoại</label><input id="fb-p" name="phone" required value="${esc(u?.phone||'')}"></div><div class="field full"><label for="fb-t">Nội dung</label><textarea id="fb-t" name="text" required></textarea></div><div class="full"><button class="btn primary">Gửi phản hồi</button></div></form>`)},
+ resetDemo(){confirmBox('Khôi phục toàn bộ dữ liệu mẫu? Mọi thay đổi bạn đã làm trên trình duyệt này sẽ bị xóa.','resetYes',{},'Khôi phục')},
+ resetYes(){DB=seed();save();closeModal();toast('Đã khôi phục dữ liệu mẫu.');go('home')}
+};
+function doLogin(u){if(!u)return;if(u.locked){toast('Tài khoản này đã bị khóa. Vui lòng liên hệ Ban quản lý.');return}
+  const g=DB.carts.guest||[];if(g.length){const c=DB.carts[u.id]||(DB.carts[u.id]=[]);g.forEach(i=>{if(prod(i.pid)?.sellerId===u.id)return;const e=c.find(x=>x.pid===i.pid);if(e)e.qty+=i.qty;else c.push(i)});DB.carts.guest=[]}
+  DB.session=u.id;save();toast(`Xin chào ${u.name} (${ROLE[u.role]}).`);const a=state.after;state.after=null;
+  location.hash=a&&a!=='#login'?a:(u.role==='admin'?'#admin':u.role==='owner'?'#seller':'#home');render()}
+
+/* ===================== FORM ===================== */
+const F={
+ rent(fd){const p=plot(fd.get('plot')),u=me();if(p.status!=='empty'){toast('Ô đất vừa có người đặt. Vui lòng chọn ô khác.');closeModal();render();return}
+   const phone=fd.get('phone').replace(/[\s.]/g,'');if(!phoneOK(phone)){toast('Số điện thoại cần 10 chữ số, bắt đầu bằng 0.');return}
+   const term=+fd.get('term');const r={id:nid('HD'),plotId:p.id,userId:u.id,name:fd.get('name').trim(),phone,term,total:rentTotal(p,term),note:fd.get('note').trim(),status:'pending',paid:false,date:now()};
+   DB.rentals.unshift(r);p.status='pending';p.pendingBy=u.id;notify('admin',`Yêu cầu thuê mới: ô ${p.code} từ ${r.name} (${phone}), ${TERMS[term]}.`,'admin');save();closeModal();
+   toast(`Đã gửi yêu cầu thuê ô ${p.code}. Ô đất chuyển sang "Đang có người đặt thuê" và chờ Ban quản lý xác nhận.`);render()},
+ listLand(fd){const u=me(),p=plot(fd.get('plot'));if(!p||p.ownerId!==u.id){toast('Bạn không có quyền sở hữu hoặc chuyển nhượng ô đất này nên không thể đăng bán.');return}
+   if(DB.listings.some(l=>l.plotId===p.id&&['pending','approved'].includes(l.status))){toast(`Ô ${p.code} đã có tin đăng đang chờ duyệt hoặc đang rao bán.`);return}
+   if(p.status==='pending'){toast(`Ô ${p.code} đang có yêu cầu thuê chờ xử lý. Không thể đăng bán lúc này.`);return}
+   const phone=fd.get('phone').replace(/[\s.]/g,'');if(!phoneOK(phone)){toast('Số điện thoại cần 10 chữ số, bắt đầu bằng 0.');return}
+   DB.listings.unshift({id:nid('TD'),plotId:p.id,sellerId:u.id,price:+fd.get('price'),phone,desc:fd.get('desc').trim(),img:fd.get('img')||null,status:'pending',date:now()});
+   notify('admin',`Tin đăng bán ô ${p.code} của ${u.name} đang chờ kiểm duyệt.`,'admin');save();toast('Đã gửi tin đăng. Ban quản lý sẽ kiểm tra quyền sở hữu và duyệt tin.');render()},
+ buyReq(fd){if(!requireLogin('Đăng nhập để gửi yêu cầu mua đất.'))return;const u=me(),l=DB.listings.find(x=>x.id===fd.get('lid'));
+   if(DB.deals.some(x=>x.listingId===l.id&&x.buyerId===u.id&&['requested','agreed'].includes(x.status))){toast('Bạn đã gửi yêu cầu mua ô này. Theo dõi ở mục Giao dịch của tôi.');return}
+   const d={id:nid('GD'),listingId:l.id,plotId:l.plotId,buyerId:u.id,sellerId:l.sellerId,offer:+fd.get('offer'),msg:fd.get('msg').trim(),status:'requested',date:now()};DB.deals.unshift(d);
+   const code=plot(l.plotId).code;DB.msgs.push({id:nid('m'),from:u.id,to:l.sellerId,text:`[Yêu cầu mua ô ${code}] Giá đề nghị ${money(d.offer)}.${d.msg?' '+d.msg:''}`,time:now(),read:false});
+   notify(l.sellerId,`${u.name} gửi yêu cầu mua ô ${code} với giá ${money(d.offer)}.`,'land');save();closeModal();toast('Đã gửi yêu cầu mua. Người bán sẽ phản hồi qua tin nhắn.');state.ordTab='land';render()},
+ review(fd){const u=me();DB.reviews.unshift({id:nid('dg'),pid:fd.get('pid'),userId:u.id,rating:+fd.get('rating'),text:fd.get('text').trim(),date:now(),hidden:false});const p=prod(fd.get('pid'));notify(p.sellerId,`${u.name} đánh giá ${fd.get('rating')} sao cho "${p.name}".`,'seller');save();toast('Cảm ơn bạn đã đánh giá.');render()},
+ order(fd){const u=me();let addr=fd.get('addr');if(addr==='__new'){addr=(fd.get('newaddr')||'').trim();if(!addr){toast('Vui lòng nhập địa chỉ mới.');return}u.addresses.push(addr)}else if(!u.addresses.length&&addr&&addr!=='Nhận tại vườn')u.addresses.push(addr.trim());
+   const phone=fd.get('phone').replace(/[\s.]/g,'');if(!phoneOK(phone)){toast('Số điện thoại cần 10 chữ số, bắt đầu bằng 0.');return}
+   const {g}=cartTotals();for(const s in g)for(const i of g[s])if(i.qty>i.p.qty){toast(`"${i.p.name}" chỉ còn ${i.p.qty} ${i.p.unit}. Vui lòng sửa giỏ hàng.`);return}
+   const ids=[];for(const s in g){const items=g[s].map(i=>({pid:i.pid,name:i.p.name,price:i.p.price,qty:i.qty,unit:i.p.unit}));const sub=items.reduce((a,i)=>a+i.price*i.qty,0),ship=addr==='Nhận tại vườn'?0:shipFee(sub);
+     const o={id:nid('DH'),buyerId:u.id,sellerId:s,items,subtotal:sub,ship,total:sub+ship,pay:fd.get('pay'),name:fd.get('name').trim(),phone,address:addr,note:fd.get('note').trim(),status:'pending',history:[{s:'pending',t:now()}],stockDeducted:false,paid:false,date:now()};
+     DB.orders.unshift(o);ids.push(o.id);notify(s,`Đơn hàng mới ${o.id} từ ${o.name}: ${items.map(i=>i.name+' ×'+i.qty).join(', ')}.`,'seller')}
+   DB.carts[u.id]=[];save();state.ordTab='buy';toast(`Đặt hàng thành công: ${ids.join(', ')}. Người bán sẽ xác nhận đơn sớm.`);go('orders')},
+ msg(fd,f){const u=me(),text=fd.get('text').trim();if(!text)return;DB.msgs.push({id:nid('m'),from:u.id,to:fd.get('to'),text,time:now(),read:false});state.chatDraft='';save();render();setTimeout(()=>$('#msg-text')?.focus(),0)},
+ login(fd){const id=fd.get('id').trim().toLowerCase().replace(/[\s.]/g,'');const u=DB.users.find(x=>x.phone===id||x.email.toLowerCase()===fd.get('id').trim().toLowerCase());
+   if(!u||u.pass!==fd.get('pw')){toast('Số điện thoại/email hoặc mật khẩu chưa đúng.');return}doLogin(u)},
+ register(fd){const phone=fd.get('phone').replace(/[\s.]/g,''),email=fd.get('email').trim();if(!phoneOK(phone)){toast('Số điện thoại cần 10 chữ số, bắt đầu bằng 0.');return}
+   if(fd.get('pw')!==fd.get('pw2')){toast('Hai mật khẩu chưa khớp.');return}if(DB.users.some(u=>u.phone===phone)){toast('Số điện thoại này đã được đăng ký. Hãy đăng nhập.');return}if(email&&DB.users.some(u=>u.email.toLowerCase()===email.toLowerCase())){toast('Email này đã được đăng ký.');return}
+   const u={id:nid('u'),name:fd.get('name').trim(),phone,email,pass:fd.get('pw'),role:fd.get('role')==='owner'?'owner':'buyer',locked:false,addresses:[],joined:now()};DB.users.push(u);notify('admin',`Người dùng mới: ${u.name} (${ROLE[u.role]}).`,'admin');doLogin(u)},
+ forgot(fd){const id=fd.get('id').trim().toLowerCase().replace(/\s/g,'');const u=DB.users.find(x=>x.phone===id||x.email.toLowerCase()===id);if(!u){toast('Không tìm thấy tài khoản với thông tin này.');return}
+   state.resetUser=u.id;state.resetCode=String(Math.floor(100000+Math.random()*900000));render()},
+ reset(fd){if(fd.get('code').trim()!==state.resetCode){toast('Mã xác nhận chưa đúng.');return}user(state.resetUser).pass=fd.get('pw');state.resetUser=null;state.loginTab='login';save();toast('Đã đặt lại mật khẩu. Vui lòng đăng nhập.');render()},
+ profile(fd){const u=me(),phone=fd.get('phone').replace(/[\s.]/g,'');if(!phoneOK(phone)){toast('Số điện thoại cần 10 chữ số, bắt đầu bằng 0.');return}if(DB.users.some(x=>x.id!==u.id&&x.phone===phone)){toast('Số điện thoại đã thuộc tài khoản khác.');return}
+   u.name=fd.get('name').trim();u.phone=phone;u.email=fd.get('email').trim();save();toast('Đã lưu thông tin.');render()},
+ chpw(fd){const u=me();if(u.pass!==fd.get('old')){toast('Mật khẩu hiện tại chưa đúng.');return}u.pass=fd.get('pw');save();toast('Đã đổi mật khẩu.');render()},
+ addAddr(fd){me().addresses.push(fd.get('addr').trim());save();render()},
+ product(fd){const u=me(),id=fd.get('id');const pl=plot(fd.get('plot'));if(!pl||!(pl.userId===u.id||pl.ownerId===u.id)){toast('Bạn chỉ được đăng bán rau từ ô đất mình sở hữu hoặc đang thuê.');return}
+   const deliv=fd.getAll('delivery');if(!deliv.length){toast('Chọn ít nhất một phương thức giao hàng.');return}
+   const data={name:fd.get('name').trim(),plotId:pl.id,cat:fd.get('cat'),unit:fd.get('unit'),price:+fd.get('price'),qty:+fd.get('qty'),harvest:fd.get('harvest'),delivery:deliv,desc:fd.get('desc').trim()};
+   if(id){const p=prod(id);Object.assign(p,data);if(fd.get('img'))p.img=fd.get('img')}else DB.products.unshift({id:nid('sp'),sellerId:u.id,...data,img:fd.get('img')||null,hidden:false,adminHidden:false,created:now()});
+   save();closeModal();toast(id?'Đã lưu sản phẩm.':'Đã đăng sản phẩm lên Chợ rau.');state.sellerTab='products';render()},
+ plotCrop(fd){const p=plot(fd.get('id'));p.crop=fd.get('crop').trim();if(fd.get('img'))p.img=fd.get('img');save();toast(`Đã cập nhật ô ${p.code}.`);render()},
+ addPlot(fd){const side=fd.get('side'),l=sidePlots(side);const nums=DB.plots.filter(p=>p.side===side).map(p=>parseInt(p.code.slice(1))||0);const n=(nums.length?Math.max(...nums):0)+1;const area=+fd.get('area');const pm=+fd.get('pm')||area*10000;
+   const code=side+String(n).padStart(2,'0');DB.plots.push({id:nid('pl'),code,side,order:l.length,area,priceMonth:pm,priceYear:pm*10,salePrice:0,status:'empty',userId:null,ownerId:null,crop:'',img:null,note:'',prevStatus:null});save();toast(`Đã thêm ô ${code}.`);render()},
+ editPlot(fd){const p=plot(fd.get('id'));const code=fd.get('code').trim().toUpperCase();if(DB.plots.some(x=>x.id!==p.id&&x.code===code)){toast(`Mã ${code} đã tồn tại.`);return}
+   const st=fd.get('status');if(st==='sale'&&!DB.listings.some(l=>l.plotId===p.id&&l.status==='approved')){toast('Muốn chuyển sang "Đang rao bán", chủ sở hữu cần đăng tin và được duyệt ở mục Kiểm duyệt tin đăng.');return}
+   Object.assign(p,{code,area:+fd.get('area'),priceMonth:+fd.get('pm'),priceYear:+fd.get('py'),status:st,crop:fd.get('crop').trim(),userId:fd.get('userId')||null,ownerId:fd.get('ownerId')||null,note:fd.get('note').trim()});
+   if(fd.get('img'))p.img=fd.get('img');if(fd.get('rmimg'))p.img=null;if(st==='empty'){p.userId=null;p.pendingBy=null}save();closeModal();toast(`Đã lưu ô ${p.code}.`);render()},
+ listReject(fd){const l=DB.listings.find(x=>x.id===fd.get('id'));l.status='rejected';l.reason=fd.get('reason').trim();notify(l.sellerId,`Tin đăng bán ô ${plot(l.plotId).code} bị từ chối: ${l.reason}.`,'land');save();closeModal();render()},
+ broadcast(fd){const to=fd.get('to'),text=fd.get('text').trim();const l=DB.users.filter(u=>u.role!=='admin'&&(to==='all'||u.role===to));l.forEach(u=>notify(u.id,'[Ban quản lý] '+text,''));save();toast(`Đã gửi thông báo tới ${l.length} người dùng.`);render()},
+ feedback(fd){DB.feedback.unshift({id:nid('fb'),name:fd.get('name').trim(),phone:fd.get('phone').trim(),text:fd.get('text').trim(),time:now(),done:false});notify('admin',`Phản hồi mới từ ${fd.get('name')}.`,'admin');save();closeModal();toast('Đã gửi phản hồi tới Ban quản lý.');renderHeader()}
+};
+
+/* ===================== SỰ KIỆN ===================== */
+document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;const a=A[t.dataset.a];if(!a)return;if(t.tagName==='A')e.preventDefault();a(t.dataset,t,e)});
+document.addEventListener('submit',e=>{const f=e.target;if(!f.dataset.f)return;e.preventDefault();F[f.dataset.f]?.(new FormData(f),f)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#modal-root').innerHTML)closeModal()});
+let qT;document.addEventListener('input',e=>{const t=e.target;if(t.dataset.i==='mkQ'){state.mk.q=t.value;clearTimeout(qT);qT=setTimeout(()=>{$('#mk-list').innerHTML=marketList()},180)}});
+document.addEventListener('change',e=>{const t=e.target,c=t.dataset.c;
+  if(t.type==='file'&&t.dataset.into){const f=t.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const img=new Image();img.onload=()=>{const s=Math.min(1,720/Math.max(img.width,img.height));const cv=document.createElement('canvas');cv.width=img.width*s;cv.height=img.height*s;cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+    const url=cv.toDataURL('image/jpeg',.72);t.form.elements[t.dataset.into].value=url;const pv=t.parentElement.querySelector('.img-prev');if(pv){pv.src=url;pv.hidden=false}};img.onerror=()=>toast('Không đọc được ảnh này. Hãy chọn ảnh JPG hoặc PNG.');img.src=rd.result};rd.readAsDataURL(f);return}
+  if(!c)return;const id=t.dataset.id;
+  if(c==='rentF'){state.rent[t.dataset.k]=t.value;$('#rent-list').innerHTML=rentList()}
+  if(c==='landF'){state.land[t.dataset.k]=t.value;$('#land-list').innerHTML=landList()}
+  if(c==='mkF'){state.mk[t.dataset.k]=t.value;$('#mk-list').innerHTML=marketList()}
+  if(c==='rentTerm'){$('#r-total').textContent=money(rentTotal(plot(id),t.value))}
+  if(c==='cartSet'){const it=cart().find(i=>i.pid===id),p=prod(id);it.qty=Math.max(1,Math.min(p.qty,parseInt(t.value)||1));if((parseInt(t.value)||1)>p.qty)toast(`Chỉ còn ${p.qty} ${p.unit}.`);save();render()}
+  if(c==='qPrice'){const p=prod(id);p.price=Math.max(0,+t.value||0);save();toast(`Đã cập nhật giá ${p.name}: ${money(p.price)}.`)}
+  if(c==='qQty'){const p=prod(id);p.qty=Math.max(0,parseInt(t.value)||0);save();toast(`Đã cập nhật tồn kho ${p.name}: ${p.qty} ${p.unit}.`)}
+  if(c==='plotStatus'){const p=plot(id);if(t.value==='sale'&&!DB.listings.some(l=>l.plotId===p.id&&l.status==='approved')){toast('Cần có tin rao bán đã duyệt để chuyển sang "Đang rao bán".');t.value=p.status;return}p.status=t.value;if(t.value==='empty'){p.userId=null;p.pendingBy=null;p.crop=''}save();toast(`Ô ${p.code}: ${PST[p.status].t}.`);render()}
+  if(c==='userRole'){const u=user(id);u.role=t.value;save();toast(`${u.name} giờ là ${ROLE[u.role]}.`);render()}
+  if(c==='userFilter'){state.userRoleFilter=t.value;render()}
+  if(c==='orderFilter'){state.adminOrderFilter=t.value;render()}
+  if(c==='adminOrdStatus'){const o=DB.orders.find(x=>x.id===id);if(setOrderStatus(o,t.value,me().id)){save();toast(`Đơn ${o.id}: ${OST[o.status]}.`)}render()}
+});
+window.addEventListener('hashchange',()=>{state.menuOpen=false;closeModal();render();window.scrollTo(0,0)});
+load();renderFooter();render();
+</script>
+
+</body>
+</html>
